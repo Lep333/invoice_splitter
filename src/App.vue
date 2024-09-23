@@ -3,5 +3,5 @@ import Person from './components/Persons.vue'
 </script>
 
 <template>
-  <Person/>
+  <router-view ></router-view>
 </template>

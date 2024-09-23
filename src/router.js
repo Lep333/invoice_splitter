@@ -1,13 +1,15 @@
-import { createMemoryHistory, createRouter } from 'vue-router';
+import { createWebHistory, createRouter } from 'vue-router';
 
-import Persons from "./components/Persons.vue";
+import Persons from './components/Persons.vue';
+import Groups from './components/Groups.vue';
 
 const routes = [
-    { path: '/persons', component: Persons }
+    { path: '/persons', component: Persons },
+    { path: '/groups', component: Groups },
 ];
 
 const router = createRouter({
-    history: createMemoryHistory(),
+    history: createWebHistory(),
     routes
 });
 

@@ -26,6 +26,7 @@ export default {
 </script>
 
 <template>
+  <router-link to="/groups">Groups</router-link>
   <div id="addPersonDialog" v-show="showDialog">
     <label for="name" type="text">Name</label>
     <input id="name"  v-model="newPerson">
