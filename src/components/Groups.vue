@@ -1,31 +1,41 @@
 <template>
-    <router-link to="/persons">Persons</router-link>
+    <nav>
+        <router-link to="/persons">Persons</router-link>
+    </nav>
     <div id="addGroupDialog">
         <label for="newGroupInput">Group Name</label>
         <input id="newGroupInput" v-model="newGroup">
         <div @click="this.addGroup()">Add Group</div>
     </div>
     <div id="groupList">
-        <template v-for="el in this.groups" :key="el">
+        <template v-for="el in this.getGroups" :key="el">
             <div>{{ el }}</div>
         </template>
     </div>
 </template>
 
 <script>
+import { billSplitterStore } from '@/store';
+
 export default {
   data() {
     return {
-        groups: [],
         newGroup: "",
     }
   },
   methods: {
     addGroup() {
+        const store = billSplitterStore();
         if (this.newGroup != "") {
-            this.groups.push(this.newGroup);
+            store.addGroup(this.newGroup);
             this.newGroup = "";
         }
+    }
+  },
+  computed: {
+    getGroups() {
+        const store = billSplitterStore();
+        return store.getGroups;
     }
   },
   name: 'Groups',

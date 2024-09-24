@@ -1,8 +1,9 @@
 <script>
+import { billSplitterStore } from '@/store';
+
 export default {
   data() {
     return {
-      names: [],
       showDialog: false,
       newPerson: "",
       newPersonGroups: "",
@@ -11,15 +12,23 @@ export default {
   },
   methods: {
     addPerson() {
+      const store = billSplitterStore();
       this.showDialog = false;
-      this.names.push({"name": this.newPerson, "groups": this.newPersonGroups, "expenses": "0", "balance": "0"});
+      store.addPerson({"name": this.newPerson, "groups": this.newPersonGroups, "expenses": "0", "balance": "0"});
       this.newPerson = "";
       this.newPersonGroups = "";
+      
     },    
     cancelAddingPerson() {
       this.showDialog = false;
       this.newPerson = "";
       this.newPersonGroups = "";
+    }
+  },
+  computed: {
+    getPersons() {
+      const store = billSplitterStore();
+      return store.getPersons;
     }
   }
 }
@@ -42,7 +51,7 @@ export default {
     <template v-for="el in this.personTableHeader" :key="el">
       <div> {{ el }} </div>
     </template>
-    <template v-for="el in this.names" :key="el">
+    <template v-for="el in this.getPersons" :key="el">
       <div> {{ el.name }} </div>
       <div>  {{ el.groups }} </div> 
       <div>  {{ el.expenses }} </div> 
