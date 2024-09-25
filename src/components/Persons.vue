@@ -1,3 +1,34 @@
+<template>
+  <router-link to="/groups">Groups</router-link>
+  <router-link to="/expenses">Expenses</router-link>
+  <div id="addPersonDialog" v-show="showDialog">
+    <label for="name" type="text">Name</label>
+    <input id="name"  v-model="newPerson">
+    <label for="groups">Groups</label>
+    <select name="groups" v-model="newPersonGroups">
+      <template v-for="group in this.getGroups" :key="group">
+        <option> {{ group }} </option>
+      </template>
+    </select>
+    <div id="addPersonButton" class="button" v-show="this.newPerson" @click="addPerson()">Add person</div>
+    <div id="cancelButton" class="button" v-show="this.newPerson" @click="cancelAddingPerson()">Cancel</div>
+  </div>
+  <div>
+    <img @click="showDialog = true" id="addPerson" src="../assets/person_add_24dp_E8EAED_FILL0_wght400_GRAD0_opsz24.svg" alt="add person">
+  </div>
+  <div id="personList">
+    <template v-for="el in this.personTableHeader" :key="el">
+      <div> {{ el }} </div>
+    </template>
+    <template v-for="el in this.getPersons" :key="el">
+      <div> {{ el.name }} </div>
+      <div>  {{ el.groups }} </div> 
+      <div>  {{ el.expenses }} </div> 
+      <div>  {{ el.balance }} </div> 
+    </template>
+  </div>
+</template>
+
 <script>
 import { billSplitterStore } from '@/store';
 
@@ -29,36 +60,14 @@ export default {
     getPersons() {
       const store = billSplitterStore();
       return store.getPersons;
+    },
+    getGroups() {
+      const store = billSplitterStore();
+      return store.getGroups;
     }
   }
 }
 </script>
-
-<template>
-  <router-link to="/groups">Groups</router-link>
-  <div id="addPersonDialog" v-show="showDialog">
-    <label for="name" type="text">Name</label>
-    <input id="name"  v-model="newPerson">
-    <label for="groups">Groups</label>
-    <input id="groups" v-model="newPersonGroups">
-    <div id="addPersonButton" class="button" v-show="this.newPerson" @click="addPerson()">Add person</div>
-    <div id="cancelButton" class="button" v-show="this.newPerson" @click="cancelAddingPerson()">Cancel</div>
-  </div>
-  <div>
-    <img @click="showDialog = true" id="addPerson" src="../assets/person_add_24dp_E8EAED_FILL0_wght400_GRAD0_opsz24.svg" alt="add person">
-  </div>
-  <div id="personList">
-    <template v-for="el in this.personTableHeader" :key="el">
-      <div> {{ el }} </div>
-    </template>
-    <template v-for="el in this.getPersons" :key="el">
-      <div> {{ el.name }} </div>
-      <div>  {{ el.groups }} </div> 
-      <div>  {{ el.expenses }} </div> 
-      <div>  {{ el.balance }} </div> 
-    </template>
-  </div>
-</template>
 
 <style scoped>
 #personList {
