@@ -13,7 +13,7 @@
             <div> {{ el }} </div>
         </template>
         <template v-for="el in this.getGroups" :key="el">
-            <div>{{ el }}</div>
+            <div>{{ el.groupName }}</div>
             <div> {{ this.getExpensesOfGroup(el) }} </div>
         </template>
     </div>
@@ -33,16 +33,20 @@ export default {
     addGroup() {
         const store = billSplitterStore();
         if (this.newGroup != "") {
-            store.addGroup(this.newGroup);
+            let group = {
+                groupName: this.newGroup,
+                members: [],
+            }
+            store.addGroup(group);
             this.newGroup = "";
         }
     },
     getExpensesOfGroup(groupName) {
-        let groups = this.getExpenses;
+        let expenses = this.getExpenses;
         let sum = 0.0;
-        for (let group of groups) {
-            if (group.groupName == groupName) {
-                sum += group.amount;
+        for (let expense of expenses) {
+            if (expense.groupName == groupName.groupName) {
+                sum += expense.amount;
             }
         }
         return sum;

@@ -68,10 +68,9 @@ export default {
             this.amount = "";
         },
         getGroupsOfPerson() {
-            console.log("hi");
             for (let person of this.getPersons) {
                 if (person.name == this.personName) {
-                    return [person.groups];
+                    return person.groups;
                 }
             }
         },

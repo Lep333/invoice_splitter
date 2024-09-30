@@ -10,6 +10,13 @@ export const billSplitterStore = defineStore('billSplitter', {
     actions: {
         addPerson(newPerson) {
             this.persons.push(newPerson);
+            for (let groupName of newPerson.groups) {
+                for (let group of this.groups) {
+                    if (groupName == group.groupName) {
+                        group.members.push(newPerson.name);
+                    }
+                }
+            }
         },
         addGroup(newGroup) {
             this.groups.push(newGroup);

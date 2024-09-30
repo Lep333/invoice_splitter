@@ -4,14 +4,12 @@
   <div id="addPersonDialog" v-show="showDialog">
     <label for="name" type="text">Name</label>
     <input id="name"  v-model="newPerson">
-    <label for="groups">Groups</label>
-    <select name="groups" v-model="newPersonGroups">
-      <template v-for="group in this.getGroups" :key="group">
-        <option> {{ group }} </option>
-      </template>
-    </select>
-    <div id="addPersonButton" class="button" v-show="this.newPerson" @click="addPerson()">Add person</div>
-    <div id="cancelButton" class="button" v-show="this.newPerson" @click="cancelAddingPerson()">Cancel</div>
+    <template v-for="(group, index) in this.getGroups" :key="group">
+      <input :id="group.groupName" type="checkbox" v-model="newPersonGroups[index]">
+      <label :for="group.groupName"> {{ group.groupName }} </label>
+    </template>
+    <div id="addPersonButton" class="button" v-show="showDialog" @click="addPerson()">Add person</div>
+    <div id="cancelButton" class="button" v-show="showDialog" @click="cancelAddingPerson()">Cancel</div>
   </div>
   <div>
     <img @click="showDialog = true" id="addPerson" src="../assets/person_add_24dp_E8EAED_FILL0_wght400_GRAD0_opsz24.svg" alt="add person">
@@ -22,9 +20,13 @@
     </template>
     <template v-for="el in this.getPersons" :key="el">
       <div> {{ el.name }} </div>
-      <div>  {{ el.groups }} </div> 
-      <div>  {{ el.expenses }} </div> 
-      <div>  {{ el.balance }} </div> 
+      <div> 
+        <template v-for="group in el.groups" :key="group">
+          <span class="group"> {{ group }} </span>
+        </template>
+      </div> 
+      <div>  {{ getSumOfOwnExpenses(el.name) }} </div> 
+      <div>  {{ getBalance(el) }} </div> 
     </template>
   </div>
 </template>
@@ -37,7 +39,7 @@ export default {
     return {
       showDialog: false,
       newPerson: "",
-      newPersonGroups: "",
+      newPersonGroups: [],
       personTableHeader: ["Name", "Groups", "Expenses", "Balance"],
     }
   },
@@ -45,16 +47,51 @@ export default {
     addPerson() {
       const store = billSplitterStore();
       this.showDialog = false;
-      store.addPerson({"name": this.newPerson, "groups": this.newPersonGroups, "expenses": "0", "balance": "0"});
+      let personGroups = [];
+      for (let i = 0; i < this.getGroups.length; i++) {
+        if (this.newPersonGroups[i]) {
+          personGroups.push(this.getGroups[i].groupName);
+        }
+      }
+      store.addPerson({name: this.newPerson, groups: personGroups, expenses: "0", balance: "0"});
       this.newPerson = "";
-      this.newPersonGroups = "";
+      this.newPersonGroups = [];
       
     },    
     cancelAddingPerson() {
       this.showDialog = false;
       this.newPerson = "";
       this.newPersonGroups = "";
-    }
+    },
+    getSumOfOwnExpenses(personName) {
+      let sum = 0.0;
+      for (let expense of this.getExpenses) {
+        if (personName == expense.personName) {
+          sum += expense.amount;
+        }
+      }
+      return sum;
+    },
+    getBalance(person) {
+      let balance = 0;
+      for (let group of person.groups) {
+        let partenGroup = null;
+        for (let _group of this.getGroups) {
+          if (group == _group.groupName) {
+            partenGroup = _group;
+          }
+        }
+        let sum = 0;
+        for (let expense of this.getExpenses) {
+          if (expense.groupName == group) {
+            sum += expense.amount;
+          }
+        }
+        let expense = this.getSumOfOwnExpenses(person.name);
+        balance += expense - sum / partenGroup.members.length;
+      }
+      return balance;
+    },
   },
   computed: {
     getPersons() {
@@ -64,7 +101,11 @@ export default {
     getGroups() {
       const store = billSplitterStore();
       return store.getGroups;
-    }
+    },
+    getExpenses() {
+      const store = billSplitterStore();
+      return store.getExpenses;
+    },
   }
 }
 </script>
@@ -91,5 +132,12 @@ export default {
   padding: 11px;
   margin-top: 5px;
   background-color: grey;
+}
+
+.group {
+  margin: 5px;
+  padding: 3px;
+  background-color: green;
+  border-radius: 5px;
 }
 </style>
