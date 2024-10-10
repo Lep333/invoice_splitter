@@ -25,8 +25,8 @@
           <span class="group"> {{ group }} </span>
         </template>
       </div> 
-      <div>  {{ getSumOfOwnExpenses(el.name) }} </div> 
-      <div>  {{ getBalance(el) }} </div> 
+      <div>  {{ el.expenses }} </div> 
+      <div>  {{ el.balance }} </div> 
     </template>
   </div>
 </template>
@@ -53,7 +53,7 @@ export default {
           personGroups.push(this.getGroups[i].groupName);
         }
       }
-      store.addPerson({name: this.newPerson, groups: personGroups, expenses: "0", balance: "0"});
+      store.addPerson({name: this.newPerson, groups: personGroups, expenses: 0.0, balance: 0.0});
       this.newPerson = "";
       this.newPersonGroups = [];
       

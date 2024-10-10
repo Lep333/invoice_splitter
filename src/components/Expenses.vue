@@ -1,6 +1,7 @@
 <template>
     <router-link to="/persons">Persons</router-link>
     <router-link to="/groups">Groups</router-link>
+    <div @click="doFinalBilling()">Do Final Billing</div>
     <div id="expensesView">
         <div id="addExpenseDialog">
             <label for="personName">Person Name</label>
@@ -73,6 +74,10 @@ export default {
                     return person.groups;
                 }
             }
+        },
+        doFinalBilling() {
+            const store = billSplitterStore();
+            return store.doFinalBilling();
         },
     },
     computed: {

@@ -14,7 +14,8 @@
         </template>
         <template v-for="el in this.getGroups" :key="el">
             <div>{{ el.groupName }}</div>
-            <div> {{ this.getExpensesOfGroup(el) }} </div>
+            <div>{{ el.members }}</div>
+            <div>{{ el.expenses }}</div>
         </template>
     </div>
 </template>
@@ -26,7 +27,7 @@ export default {
   data() {
     return {
         newGroup: "",
-        groupsListCaptions: ["Name", "Expenses"],
+        groupsListCaptions: ["Name", "Members", "Expenses"],
     }
   },
   methods: {
@@ -36,6 +37,7 @@ export default {
             let group = {
                 groupName: this.newGroup,
                 members: [],
+                expenses: 0,
             }
             store.addGroup(group);
             this.newGroup = "";
@@ -74,6 +76,6 @@ export default {
 
 #groupList {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr;
 }
 </style>
