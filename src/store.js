@@ -43,6 +43,36 @@ export const billSplitterStore = defineStore('billSplitter', {
                 person.balance = person.expenses - balance;
             }
         },
+        editPerson(person, oldName) {
+            // change name in groups
+            for (let group of this.groups) {
+                let index = group.members.indexOf(oldName);
+                let bla = person.groups.filter((el) => el == group.groupName);
+                if (index >= 0) {
+                    group.members[index] = person.name;
+                } else if (bla.length == 1 && bla[0] == group.groupName) {
+                    group.members.push(person.name);
+                }
+            }
+
+            // change name in expenses
+            for (let expense of this.expenses) {
+                if (oldName == expense.personName) {
+                    expense.personName = person.name;
+                }
+            }
+        },
+        removePerson(person) {
+            for (let group of this.groups) {
+                group.members = group.members.filter((el) => el != person.name);
+            }
+
+            let personExpenses = this.expenses.filter((el) => el.personName == person.name);
+            for (let expense of personExpenses) {
+                expense.personName = "";
+            }
+            this.persons = this.persons.filter((el) => person.name != el.name);
+        },
         doFinalBilling() {
             let personNames = [];
             for (let person of this.persons) {

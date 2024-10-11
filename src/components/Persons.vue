@@ -11,6 +11,16 @@
     <div id="addPersonButton" class="button" v-show="showDialog" @click="addPerson()">Add person</div>
     <div id="cancelButton" class="button" v-show="showDialog" @click="cancelAddingPerson()">Cancel</div>
   </div>
+  <div id="editPersonDialog" v-show="showEditDialog">
+    <label for="name" type="text">Name</label>
+    <input id="name"  v-model="editPersonObj.name">
+    <template v-for="(group, index) in this.getGroups" :key="group">
+      <input :id="group.groupName" type="checkbox" v-model="newPersonGroups[index]">
+      <label :for="group.groupName"> {{ group.groupName }} </label>
+    </template>
+    <div id="editPersonButton" class="button" @click="editPersonComplete()">Edit person</div>
+    <div id="cancelEditButton" class="button" @click="cancelEditingPerson()">Cancel</div>
+  </div>
   <div>
     <img @click="showDialog = true" id="addPerson" src="../assets/person_add_24dp_E8EAED_FILL0_wght400_GRAD0_opsz24.svg" alt="add person">
   </div>
@@ -26,7 +36,9 @@
         </template>
       </div> 
       <div>  {{ el.expenses }} </div> 
-      <div>  {{ el.balance }} </div> 
+      <div>  {{ el.balance }} </div>
+      <div @click="editPerson(el)"> edit </div>
+      <div @click="removePerson(el)"> remove  </div>
     </template>
   </div>
 </template>
@@ -40,7 +52,10 @@ export default {
       showDialog: false,
       newPerson: "",
       newPersonGroups: [],
-      personTableHeader: ["Name", "Groups", "Expenses", "Balance"],
+      personTableHeader: ["Name", "Groups", "Expenses", "Balance", "", ""],
+      showEditDialog: false,
+      editPersonObj: {name: ""},
+      editOldName: "",
     }
   },
   methods: {
@@ -92,6 +107,34 @@ export default {
       }
       return balance;
     },
+    editPerson(person) {
+      this.editPersonObj = person;
+      this.editOldName = person.name;
+      this.showEditDialog = true;
+    },
+    editPersonComplete() {
+      const store = billSplitterStore();
+      let personGroups = [];
+      for (let i = 0; i < this.getGroups.length; i++) {
+        if (this.newPersonGroups[i]) {
+          personGroups.push(this.getGroups[i].groupName);
+        }
+      }
+      this.editPersonObj.groups = personGroups;
+      store.editPerson(this.editPersonObj, this.editOldName);
+      this.editPersonObj = {name: ""};
+      this.newPersonGroups = [];
+      this.showEditDialog = false;
+    },
+    cancelEditingPerson() {
+      this.editPersonObj = {name: ""};
+      this.newPersonGroups = [];
+      this.showEditDialog = false;
+    },
+    removePerson(person) {
+      const store = billSplitterStore();
+      store.removePerson(person);
+    },
   },
   computed: {
     getPersons() {
@@ -113,7 +156,7 @@ export default {
 <style scoped>
 #personList {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
 }
 
 #addPerson {
