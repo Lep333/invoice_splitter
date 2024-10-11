@@ -8,6 +8,21 @@
         <input id="newGroupInput" v-model="newGroup">
         <div @click="this.addGroup()">Add Group</div>
     </div>
+    <div id="editGroupDialog">
+        <label for="newGroupInput">Group Name</label>
+        <input id="newGroupInput" v-model="currentEditGroup.groupName">
+        <div id="personGrid">
+            <template v-for="caption in this.editGroupCaptions">
+                <div>{{ caption }}</div>
+            </template>
+            <template v-for="el in this.currentEditGroup.members">
+                <div>{{ el.name }}</div>
+                <input type="number" v-model="el.share">
+                <div>{{ this.currentEditGroup.expenses * el.share / getSharesSum(this.currentEditGroup) }}</div>
+            </template>
+        </div>
+        <div @click="this.editGroup()">Edit Group</div>
+    </div>
     <div id="groupList">
         <template v-for="el in this.groupsListCaptions" :key="el">
             <div> {{ el }} </div>
@@ -16,6 +31,7 @@
             <div>{{ el.groupName }}</div>
             <div>{{ el.members }}</div>
             <div>{{ el.expenses }}</div>
+            <div @click="openEditDialog(el)"> edit </div>
         </template>
     </div>
 </template>
@@ -27,7 +43,9 @@ export default {
   data() {
     return {
         newGroup: "",
-        groupsListCaptions: ["Name", "Members", "Expenses"],
+        currentEditGroup: { groupName: ""},
+        groupsListCaptions: ["Name", "Members", "Expenses", ""],
+        editGroupCaptions: ["Name", "Share", "Amount"],
     }
   },
   methods: {
@@ -52,7 +70,29 @@ export default {
             }
         }
         return sum;
-    }
+    },
+    openEditDialog(el) {
+        this.currentEditGroup = el;
+    },
+    editGroup() {
+        for (let member of this.editGroup) {
+            member.share = parseFloat(member.share);
+        }
+        this.currentEditGroup = { groupName: ""};
+    },
+    getSharesSum(el) {
+        console.log(el.expenses);
+        let sum = 0;
+        for (let member of el.members) {
+            sum += member.share;
+        }
+        console.log("hallo", sum);
+        console.log(13 / 1);
+        return sum;
+    },
+    test(el) {
+        return el.expenses / getSharesSum(this.currentEditGroup);
+    },
   },
   computed: {
     getGroups() {
@@ -75,6 +115,16 @@ export default {
 }
 
 #groupList {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+}
+
+#editGroupDialog {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
+
+#personGrid {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
 }

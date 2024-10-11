@@ -10,10 +10,14 @@ export const billSplitterStore = defineStore('billSplitter', {
     actions: {
         addPerson(newPerson) {
             this.persons.push(newPerson);
+            let person = {
+                name: newPerson.name,
+                share: 1,
+            };
             for (let groupName of newPerson.groups) {
                 for (let group of this.groups) {
                     if (groupName == group.groupName) {
-                        group.members.push(newPerson.name);
+                        group.members.push(person);
                     }
                 }
             }
@@ -45,13 +49,19 @@ export const billSplitterStore = defineStore('billSplitter', {
         },
         editPerson(person, oldName) {
             // change name in groups
+            let personObj = {
+                name: person.name,
+                share: 1,
+            };
+            
             for (let group of this.groups) {
-                let index = group.members.indexOf(oldName);
-                let bla = person.groups.filter((el) => el == group.groupName);
-                if (index >= 0) {
-                    group.members[index] = person.name;
-                } else if (bla.length == 1 && bla[0] == group.groupName) {
-                    group.members.push(person.name);
+                for (let member of group.members) {
+                    let personGroups = person.groups.filter((el) => el == group.groupName);
+                    if (member.name == oldName) {
+                        member.name = person.name;
+                    } else if (personGroups.length == 1 && personGroups[0] == group.groupName) {
+                        group.members.push(personObj);
+                    }
                 }
             }
 
