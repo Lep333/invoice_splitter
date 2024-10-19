@@ -5,8 +5,8 @@
     <label for="name" type="text">Name</label>
     <input id="name"  v-model="newPerson">
     <template v-for="(group, index) in this.getGroups" :key="group">
-      <input :id="group.groupName" type="checkbox" v-model="newPersonGroups[index]">
-      <label :for="group.groupName"> {{ group.groupName }} </label>
+      <input id="groupName" type="checkbox" v-model="newPersonGroups[index]">
+      <label for="groupName"> {{ group.groupName }} </label>
     </template>
     <div id="addPersonButton" class="button" v-show="showDialog" @click="addPerson()">Add person</div>
     <div id="cancelButton" class="button" v-show="showDialog" @click="cancelAddingPerson()">Cancel</div>
@@ -37,8 +37,8 @@
       </div> 
       <div>  {{ el.expenses }} </div> 
       <div>  {{ el.balance }} </div>
-      <div @click="editPerson(el)"> edit </div>
-      <div @click="removePerson(el)"> remove  </div>
+      <div class="editButton" @click="editPerson(el)"> edit </div>
+      <div class="removeButton" @click="removePerson(el)"> remove  </div>
     </template>
   </div>
 </template>
@@ -121,7 +121,7 @@ export default {
         }
       }
       this.editPersonObj.groups = personGroups;
-      store.editPerson(this.editPersonObj, this.editOldName);
+      store.editPerson(this.editPersonObj);
       this.editPersonObj = {name: ""};
       this.newPersonGroups = [];
       this.showEditDialog = false;

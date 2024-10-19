@@ -1,5 +1,23 @@
 import { defineStore } from "pinia";
 
+function groupInPerson(person, group) {
+    for (let g of person.groups) {
+        if (g == group.groupName) {
+            return true;
+        }
+    }
+    return false;
+}
+
+function personInGroup(person, group) {
+    for (let member of group.members) {
+        if (member.person == person) {
+            return true;
+        }
+    }
+    return false;
+}
+
 export const billSplitterStore = defineStore('billSplitter', {
     state: () => ({ persons: [], groups: [], expenses: [], }),
     getters: {
@@ -11,7 +29,7 @@ export const billSplitterStore = defineStore('billSplitter', {
         addPerson(newPerson) {
             this.persons.push(newPerson);
             let person = {
-                name: newPerson.name,
+                person: newPerson,
                 share: 1,
             };
             for (let groupName of newPerson.groups) {
@@ -34,7 +52,7 @@ export const billSplitterStore = defineStore('billSplitter', {
             }
             for (let person of this.persons) {
                 if (person.name == newExpense.personName) {
-                    person.expenses += newExpense.amount; 
+                    person.expenses += newExpense.amount;
                 }
                 let balance = 0;
                 for (let groupName of person.groups) {
@@ -47,21 +65,19 @@ export const billSplitterStore = defineStore('billSplitter', {
                 person.balance = person.expenses - balance;
             }
         },
-        editPerson(person, oldName) {
-            // change name in groups
-            let personObj = {
-                name: person.name,
+        editPerson(editPerson) {
+            // change group membership
+            let person = {
+                person: editPerson,
                 share: 1,
             };
-            
             for (let group of this.groups) {
-                for (let member of group.members) {
-                    let personGroups = person.groups.filter((el) => el == group.groupName);
-                    if (member.name == oldName) {
-                        member.name = person.name;
-                    } else if (personGroups.length == 1 && personGroups[0] == group.groupName) {
-                        group.members.push(personObj);
-                    }
+                // add person to group
+                if (groupInPerson(editPerson, group) && !personInGroup(editPerson, group)) {
+                    group.members.push(person);
+                } else if (!groupInPerson(editPerson, group) && personInGroup(editPerson, group)) { // remove person from group 
+                    let index = group.members.indexOf(editPerson);
+                    group.members.splice(index, 1);
                 }
             }
 
@@ -105,13 +121,13 @@ export const billSplitterStore = defineStore('billSplitter', {
                     if (creditor.balance > 0.1) {
                         let amount = Math.min(balance, creditor.balance);
                         balance -= amount;
-                        let expense = { 
+                        let expense = {
                             personName: debtor.name,
                             groupName: "FINAL BILLING",
                             description: `pays ${creditor.name}`,
                             amount: amount,
                         };
-                        let expense2 = { 
+                        let expense2 = {
                             personName: creditor.name,
                             groupName: "FINAL BILLING",
                             description: `gets payed by ${debtor.name}`,
