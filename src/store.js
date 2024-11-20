@@ -18,6 +18,14 @@ function personInGroup(person, group) {
     return false;
 }
 
+function getTotalSumOfGroupShares(group) {
+    let totalShares = 0;
+    for (let member of group.members) {
+        totalShares += member.share;
+    }
+    return totalShares;
+}
+
 export const billSplitterStore = defineStore('billSplitter', {
     state: () => ({ persons: [], groups: [], expenses: [], }),
     getters: {
@@ -87,6 +95,7 @@ export const billSplitterStore = defineStore('billSplitter', {
                     expense.personName = person.name;
                 }
             }
+            updateBalance();
         },
         removePerson(person) {
             for (let group of this.groups) {
@@ -137,6 +146,27 @@ export const billSplitterStore = defineStore('billSplitter', {
                         this.addExpense(expense2);
                     }
                 }
+            }
+        },
+        updateBalance() {
+            for (let group of this.groups) {
+                let groupBalance = 0.0;
+                for (let expense of this.expenses) {
+                    groupBalance += expense.amount;
+                }
+                group.expenses = groupBalance;
+            }
+
+            for (let person of this.persons) {
+                let balance = 0;
+                for (let groupName of person.groups) {
+                    for (let group of this.groups) {
+                        if (groupName == group.groupName) {
+                            balance += group.expenses / getTotalSumOfGroupShares(group);
+                        }
+                    }
+                }
+                person.balance = person.expenses - balance;
             }
         }
     }

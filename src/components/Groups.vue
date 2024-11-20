@@ -29,7 +29,11 @@
         </template>
         <template v-for="el in this.getGroups" :key="el">
             <div>{{ el.groupName }}</div>
-            <div>{{ el.members }}</div>
+            <div>
+                <template v-for="person in el.members">
+                    <span class="person">{{ person.person.name }}</span>
+                </template>
+            </div>
             <div>{{ el.expenses }}</div>
             <div @click="openEditDialog(el)"> edit </div>
         </template>
@@ -75,10 +79,12 @@ export default {
         this.currentEditGroup = el;
     },
     editGroup() {
-        for (let member of this.editGroup) {
+        const store = billSplitterStore();
+        for (let member of this.currentEditGroup.members) {
             member.share = parseFloat(member.share);
         }
         this.currentEditGroup = { groupName: ""};
+        store.updateBalance();
     },
     getSharesSum(el) {
         console.log(el.expenses);
@@ -127,5 +133,12 @@ export default {
 #personGrid {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
+}
+
+.person {
+  margin: 5px;
+  padding: 3px;
+  background-color: green;
+  border-radius: 5px;
 }
 </style>
