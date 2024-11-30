@@ -3,12 +3,14 @@
         <router-link to="/persons">Persons</router-link>
         <router-link to="/expenses">Expenses</router-link>
     </nav>
-    <div id="addGroupDialog">
+    <div class="button" @click="this.showAddGroupDialog = true">Add Group</div>
+    <div id="addGroupDialog" v-show="showAddGroupDialog">
         <label for="newGroupInput">Group Name</label>
         <input id="newGroupInput" v-model="newGroup">
-        <div @click="this.addGroup()">Add Group</div>
+        <div class="button" @click="this.addGroup()">Add Group</div>
+        <div class="button" @click="showAddGroupDialog = false">Cancel</div>
     </div>
-    <div id="editGroupDialog">
+    <div id="editGroupDialog" v-show="showEditGroupDialog">
         <label for="newGroupInput">Group Name</label>
         <input id="newGroupInput" v-model="currentEditGroup.groupName">
         <div id="personGrid">
@@ -21,7 +23,7 @@
                 <div>{{ this.currentEditGroup.expenses * el.share / getSharesSum(this.currentEditGroup) }}</div>
             </template>
         </div>
-        <div @click="this.editGroup()">Edit Group</div>
+        <div class="button" @click="this.editGroup()">Edit Group</div>
     </div>
     <div id="groupList">
         <template v-for="el in this.groupsListCaptions" :key="el">
@@ -50,6 +52,8 @@ export default {
         currentEditGroup: { groupName: ""},
         groupsListCaptions: ["Name", "Members", "Expenses", ""],
         editGroupCaptions: ["Name", "Share", "Amount"],
+        showAddGroupDialog: false,
+        showEditGroupDialog: false,
     }
   },
   methods: {
@@ -63,6 +67,7 @@ export default {
             }
             store.addGroup(group);
             this.newGroup = "";
+            this.showAddGroupDialog = false;
         }
     },
     getExpensesOfGroup(groupName) {
@@ -77,8 +82,10 @@ export default {
     },
     openEditDialog(el) {
         this.currentEditGroup = el;
+        this.showEditGroupDialog = true;
     },
     editGroup() {
+        this.showEditGroupDialog = false;
         const store = billSplitterStore();
         for (let member of this.currentEditGroup.members) {
             member.share = parseFloat(member.share);
@@ -116,6 +123,9 @@ export default {
 #addGroupDialog {
     display: grid;
     grid-template-columns: 1fr 1fr;
+    box-shadow: rgba(244, 230, 230, 0.826) 0px 3px 8px;
+    position: relative;
+    top: 30vh;
 }
 
 #groupList {

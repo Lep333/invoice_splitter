@@ -168,13 +168,8 @@ export default {
   box-shadow: rgba(244, 230, 230, 0.826) 0px 3px 8px;
   display: grid;
   grid-template-columns: 1fr 1fr;
-}
-
-.button {
-  text-align: center;
-  padding: 11px;
-  margin-top: 5px;
-  background-color: grey;
+  position: relative;
+  top: 30vh;
 }
 
 .group {

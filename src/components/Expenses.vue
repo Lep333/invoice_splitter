@@ -1,9 +1,10 @@
 <template>
     <router-link to="/persons">Persons</router-link>
     <router-link to="/groups">Groups</router-link>
-    <div @click="doFinalBilling()">Do Final Billing</div>
+    <div class="button" @click="showAddExpenseDialog = true">Add Expense</div>
+    <div class="button" @click="doFinalBilling()">Do Final Billing</div>
     <div id="expensesView">
-        <div id="addExpenseDialog">
+        <div id="addExpenseDialog" v-show="showAddExpenseDialog">
             <label for="personName">Person Name</label>
             <select name="personName" v-model="personName">
                 <template v-for="person in this.getPersons" :key="person">
@@ -20,8 +21,8 @@
             <input id="description" v-model="description">
             <label for="amount">Amount</label>
             <input id="amount" v-model="amount">
-            <div @click="addExpense()">Add Expense</div>
-            <div @click="cancel()">Cancel</div>
+            <div class="button" @click="addExpense()">Add Expense</div>
+            <div class="button" @click="cancel()">Cancel</div>
         </div>
         <div id="expensesList">
             <template v-for="caption in this.expensesListCaption" :key="caption">
@@ -48,10 +49,12 @@ export default {
             description: "",
             amount: "",
             expensesListCaption: ["Person", "Group", "Description", "Amount"],
+            showAddExpenseDialog: false,
         }
     },
     methods: {
         addExpense() {
+            this.showAddExpenseDialog = false;
             const store = billSplitterStore();
             let expense = { 
                 personName: this.personName,
@@ -63,6 +66,7 @@ export default {
             this.cancel();
         },
         cancel() {
+            this.showAddExpenseDialog = false;
             this.personName = "";
             this.groupName = "";
             this.description = "";

@@ -19,7 +19,6 @@ function personInGroup(person, group) {
 }
 
 function updateBalance(groups, persons, expenses) {
-    console.log("updateing balance...");
     for (let group of groups) {
         let groupBalance = 0.0;
         for (let expense of expenses) {
