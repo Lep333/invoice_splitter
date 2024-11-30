@@ -18,6 +18,30 @@ function personInGroup(person, group) {
     return false;
 }
 
+function updateBalance(groups, persons, expenses) {
+    console.log("updateing balance...");
+    for (let group of groups) {
+        let groupBalance = 0.0;
+        for (let expense of expenses) {
+            groupBalance += expense.amount;
+        }
+        group.expenses = groupBalance;
+    }
+
+    for (let person of persons) {
+        let balance = 0;
+        for (let groupName of person.groups) {
+            for (let group of groups) {
+                let mySharesOfGroup = group.members.filter((el) => el.person.name == person.name)[0].share;
+                if (groupName == group.groupName) {
+                    balance += mySharesOfGroup * group.expenses / getTotalSumOfGroupShares(group);
+                }
+            }
+        }
+        person.balance = person.expenses - balance;
+    }
+}
+
 function getTotalSumOfGroupShares(group) {
     let totalShares = 0;
     for (let member of group.members) {
@@ -47,6 +71,7 @@ export const billSplitterStore = defineStore('billSplitter', {
                     }
                 }
             }
+            updateBalance(this.groups, this.persons, this.expenses);
         },
         addGroup(newGroup) {
             this.groups.push(newGroup);
@@ -72,6 +97,7 @@ export const billSplitterStore = defineStore('billSplitter', {
                 }
                 person.balance = person.expenses - balance;
             }
+            updateBalance(this.groups, this.persons, this.expenses);
         },
         editPerson(editPerson) {
             // change group membership
@@ -90,16 +116,17 @@ export const billSplitterStore = defineStore('billSplitter', {
             }
 
             // change name in expenses
-            for (let expense of this.expenses) {
-                if (oldName == expense.personName) {
-                    expense.personName = person.name;
-                }
-            }
-            updateBalance();
+            // for (let expense of this.expenses) {
+            //     if (oldName == expense.personName) {
+            //         expense.personName = person.name;
+            //     }
+            // }
+            updateBalance(this.groups, this.persons, this.expenses);
         },
         removePerson(person) {
             for (let group of this.groups) {
-                group.members = group.members.filter((el) => el != person.name);
+                group.members = group.members.filter((el) => el.person.name != person.name);
+                console.log(group.members.length);
             }
 
             let personExpenses = this.expenses.filter((el) => el.personName == person.name);
@@ -107,6 +134,7 @@ export const billSplitterStore = defineStore('billSplitter', {
                 expense.personName = "";
             }
             this.persons = this.persons.filter((el) => person.name != el.name);
+            updateBalance(this.groups, this.persons, this.expenses);
         },
         doFinalBilling() {
             let personNames = [];
@@ -148,26 +176,5 @@ export const billSplitterStore = defineStore('billSplitter', {
                 }
             }
         },
-        updateBalance() {
-            for (let group of this.groups) {
-                let groupBalance = 0.0;
-                for (let expense of this.expenses) {
-                    groupBalance += expense.amount;
-                }
-                group.expenses = groupBalance;
-            }
-
-            for (let person of this.persons) {
-                let balance = 0;
-                for (let groupName of person.groups) {
-                    for (let group of this.groups) {
-                        if (groupName == group.groupName) {
-                            balance += group.expenses / getTotalSumOfGroupShares(group);
-                        }
-                    }
-                }
-                person.balance = person.expenses - balance;
-            }
-        }
     }
 })
