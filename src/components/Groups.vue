@@ -92,8 +92,6 @@ export default {
         for (let member of el.members) {
             sum += member.share;
         }
-        console.log("hallo", sum);
-        console.log(13 / 1);
         return sum;
     },
     test(el) {
