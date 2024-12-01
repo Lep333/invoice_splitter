@@ -12,14 +12,12 @@ html {
   color: whitesmoke;
 }
 
-.nav-item {
-  padding-left: 1vw;
-}
-
 .button {
   text-align: center;
-  padding: 11px;
-  margin-top: 5px;
-  background-color: grey;
+  padding: .5vh;
+  margin-top: 2vh;
+  margin-right: .5vh;
+  background-color: rgb(19, 48, 110);
+  border-radius: 0.3vh;
 }
 </style>

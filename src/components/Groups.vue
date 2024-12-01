@@ -1,6 +1,6 @@
 <template>
     <NavItem parentName="groups"></NavItem>
-    <div class="button" @click="this.showAddGroupDialog = true">Add Group</div>
+    <span class="button" @click="this.showAddGroupDialog = true">Add Group</span>
     <div id="addGroupDialog" v-show="showAddGroupDialog">
         <label for="newGroupInput">Group Name</label>
         <input id="newGroupInput" v-model="newGroup">

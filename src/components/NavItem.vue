@@ -14,6 +14,9 @@ export default {
 </script>
 
 <style>
+nav {
+    margin-bottom: 1vh;
+}
 #appName {
     font-size: x-large;
     padding-right: 10px;
