@@ -6,16 +6,13 @@
         @add-person="addPerson"
         @add-person-cancel="showDialog = false">
     </AddPerson>
-    <div id="editPersonDialog" v-show="showEditDialog">
-        <label for="name" type="text">Name</label>
-        <input id="name"  v-model="editPersonObj.name">
-        <template v-for="(group, index) in this.getGroups" :key="group">
-            <input :id="group.groupName" type="checkbox" v-model="newPersonGroups[index]">
-            <label :for="group.groupName"> {{ group.groupName }} </label>
-        </template>
-        <div id="editPersonButton" class="button" @click="editPersonComplete()">Edit person</div>
-        <div id="cancelEditButton" class="button" @click="cancelEditingPerson()">Cancel</div>
-    </div>
+    <EditPerson
+        v-show="showEditDialog"
+        :groups="getGroups"
+        :editPersonObj="editPersonObj"
+        @edit-person="editPersonComplete"
+        @edit-person-cancel="cancelEditingPerson">
+    </EditPerson>
     <span class="button" @click="showDialog = true">Add Person</span>
     <div id="personList">
     <template v-for="el in this.personTableHeader" :key="el">
@@ -42,14 +39,14 @@
 import { billSplitterStore } from '@/store';
 import NavItem from './NavItem.vue';
 import AddPerson from './AddPerson.vue';
+import EditPerson from './EditPerson.vue';
 
 export default {
   data() {
     return {
       showDialog: false,
-      newPersonGroups: [],
-      personTableHeader: ["Name", "Groups", "Expenses", "Balance", ""],
       showEditDialog: false,
+      personTableHeader: ["Name", "Groups", "Expenses", "Balance", ""],
       editPersonObj: {name: ""},
       editOldName: "",
     }
@@ -57,6 +54,7 @@ export default {
   components: {
     NavItem,
     AddPerson,
+    EditPerson,
   },
   methods: {
     addPerson(person) {
@@ -64,57 +62,17 @@ export default {
         this.showDialog = false;
         store.addPerson(person);
     },
-    getSumOfOwnExpenses(personName) {
-        let sum = 0.0;
-        for (let expense of this.getExpenses) {
-            if (personName == expense.personName) {
-                sum += expense.amount;
-            }
-        }
-        return sum;
-    },
-    getBalance(person) {
-        let balance = 0;
-        for (let group of person.groups) {
-            let partenGroup = null;
-            for (let _group of this.getGroups) {
-                if (group == _group.groupName) {
-                    partenGroup = _group;
-                }
-            }
-            let sum = 0;
-            for (let expense of this.getExpenses) {
-                if (expense.groupName == group) {
-                    sum += expense.amount;
-                }
-            }
-            let expense = this.getSumOfOwnExpenses(person.name);
-            balance += expense - sum / partenGroup.members.length;
-        }
-        return balance;
-    },
     editPerson(person) {
-        this.editPersonObj = person;
-        this.editOldName = person.name;
+        this.editPersonObj = JSON.parse(JSON.stringify(person));
         this.showEditDialog = true;
     },
-    editPersonComplete() {
+    editPersonComplete(person) {
         const store = billSplitterStore();
-        let personGroups = [];
-        for (let i = 0; i < this.getGroups.length; i++) {
-                if (this.newPersonGroups[i]) {
-                    personGroups.push(this.getGroups[i].groupName);
-                }
-        }
-        this.editPersonObj.groups = personGroups;
-        store.editPerson(this.editPersonObj);
-        this.editPersonObj = {name: ""};
-        this.newPersonGroups = [];
+        store.editPerson(person);
         this.showEditDialog = false;
     },
     cancelEditingPerson() {
         this.editPersonObj = {name: ""};
-        this.newPersonGroups = [];
         this.showEditDialog = false;
     },
     removePerson(person) {
