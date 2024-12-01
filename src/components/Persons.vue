@@ -1,6 +1,5 @@
 <template>
-  <router-link to="/groups">Groups</router-link>
-  <router-link to="/expenses">Expenses</router-link>
+  <NavItem parentName="persons"></NavItem>
   <div id="addPersonDialog" v-show="showDialog">
     <label for="name" type="text">Name</label>
     <input id="name"  v-model="newPerson">
@@ -45,6 +44,7 @@
 
 <script>
 import { billSplitterStore } from '@/store';
+import NavItem from './NavItem.vue';
 
 export default {
   data() {
@@ -57,6 +57,9 @@ export default {
       editPersonObj: {name: ""},
       editOldName: "",
     }
+  },
+  components: {
+    NavItem,
   },
   methods: {
     addPerson() {

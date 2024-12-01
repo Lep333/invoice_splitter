@@ -12,6 +12,10 @@ html {
   color: whitesmoke;
 }
 
+.nav-item {
+  padding-left: 1vw;
+}
+
 .button {
   text-align: center;
   padding: 11px;

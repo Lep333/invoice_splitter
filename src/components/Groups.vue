@@ -1,8 +1,5 @@
 <template>
-    <nav>
-        <router-link to="/persons">Persons</router-link>
-        <router-link to="/expenses">Expenses</router-link>
-    </nav>
+    <NavItem parentName="groups"></NavItem>
     <div class="button" @click="this.showAddGroupDialog = true">Add Group</div>
     <div id="addGroupDialog" v-show="showAddGroupDialog">
         <label for="newGroupInput">Group Name</label>
@@ -44,6 +41,7 @@
 
 <script>
 import { billSplitterStore } from '@/store';
+import NavItem from './NavItem.vue';
 
 export default {
   data() {
@@ -55,6 +53,9 @@ export default {
         showAddGroupDialog: false,
         showEditGroupDialog: false,
     }
+  },
+  components: {
+    NavItem,
   },
   methods: {
     addGroup() {

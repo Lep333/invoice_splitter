@@ -1,6 +1,5 @@
 <template>
-    <router-link to="/persons">Persons</router-link>
-    <router-link to="/groups">Groups</router-link>
+    <NavItem parentName="expenses"></NavItem>
     <div class="button" @click="showAddExpenseDialog = true">Add Expense</div>
     <div class="button" @click="doFinalBilling()">Do Final Billing</div>
     <div id="expensesView">
@@ -40,6 +39,7 @@
 
 <script>
 import { billSplitterStore } from '@/store';
+import NavItem from './NavItem.vue';
 
 export default {
     data() {
@@ -51,6 +51,9 @@ export default {
             expensesListCaption: ["Person", "Group", "Description", "Amount"],
             showAddExpenseDialog: false,
         }
+    },
+    components: {
+        NavItem,
     },
     methods: {
         addExpense() {
@@ -110,6 +113,8 @@ export default {
 #addExpenseDialog {
     display: grid;
     grid-template-columns: 1fr 1fr;
+    position: absolute;
+    top: 30vh;
 }
 
 #expensesList {
