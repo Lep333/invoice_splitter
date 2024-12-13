@@ -13,7 +13,7 @@
         @edit-person="editPersonComplete"
         @edit-person-cancel="cancelEditingPerson">
     </EditPerson>
-    <span class="button" @click="showDialog = true">Add Person</span>
+    <span id="openAddPersonForm" class="button" @click="showDialog = true">Add Person</span>
     <div id="personList">
     <template v-for="el in this.personTableHeader" :key="el">
         <div> {{ el }} </div>
@@ -28,8 +28,8 @@
         <div>  {{ el.expenses }} </div> 
         <div>  {{ el.balance }} </div>
         <div>
-            <span class="button" @click="editPerson(el)"> edit </span>
-            <span class="button" @click="removePerson(el)"> remove  </span>
+            <span class="button openEditPersonForm" @click="editPerson(el)"> edit </span>
+            <span class="button removePerson" @click="removePerson(el)"> remove  </span>
         </div>
     </template>
     </div>
@@ -49,6 +49,7 @@ export default {
       personTableHeader: ["Name", "Groups", "Expenses", "Balance", ""],
       editPersonObj: {name: ""},
       editOldName: "",
+      editPersonOld: "",
     }
   },
   components: {
@@ -64,15 +65,15 @@ export default {
     },
     editPerson(person) {
         this.editPersonObj = JSON.parse(JSON.stringify(person));
+        this.editPersonOld = person;
         this.showEditDialog = true;
     },
     editPersonComplete(person) {
         const store = billSplitterStore();
-        store.editPerson(person);
+        store.editPerson(person, this.editPersonOld);
         this.showEditDialog = false;
     },
     cancelEditingPerson() {
-        this.editPersonObj = {name: ""};
         this.showEditDialog = false;
     },
     removePerson(person) {

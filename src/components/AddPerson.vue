@@ -26,14 +26,14 @@ export default {
   emits: ["add-person", "add-person-cancel"],
   methods: {
     addPerson() {
-        console.log(this.groups);
         let personGroups = [];
         for (let i = 0; i < this.groups.length; i++) {
                 if (this.newPersonGroups[i]) {
                     personGroups.push(this.groups[i].groupName);
                 }
         }
-        this.$emit("add-person", {name: this.newPerson, groups: personGroups, expenses: 0.0, balance: 0.0});
+        let newPersonObj = {name: this.newPerson, groups: personGroups, expenses: 0.0, balance: 0.0};
+        this.$emit("add-person", newPersonObj);
         this.newPerson = "";
         this.newPersonGroups = [];
     },    

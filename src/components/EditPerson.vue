@@ -19,9 +19,6 @@ export default {
   data() {
     return {
       newPersonGroups: [],
-      showEditDialog: false,
-      editPersonObj: {name: ""},
-      editOldName: "",
     }
   },
   props: ["editPersonObj", "groups"],
@@ -35,12 +32,10 @@ export default {
                 }
         }
         this.editPersonObj.groups = personGroups;
-        this.$emit('edit-person', this.editPersonObj);
-        this.editPersonObj = {name: ""};
-        this.newPersonGroups = [];
+        this.$emit('edit-person', {name: this.editPersonObj.name, groups: personGroups});
+        this.test = "";
     },
     cancelEditingPerson() {
-        this.editPersonObj = {name: ""};
         this.newPersonGroups = [];
         this.$emit('edit-person-cancel');
     },

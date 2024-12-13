@@ -1,4 +1,5 @@
 import { defineStore } from "pinia";
+import { toRaw } from "vue";
 
 function groupInPerson(person, group) {
     for (let g of person.groups) {
@@ -98,28 +99,31 @@ export const billSplitterStore = defineStore('billSplitter', {
             }
             updateBalance(this.groups, this.persons, this.expenses);
         },
-        editPerson(editPerson) {
+        editPerson(editPerson, oldPerson) {
+            for (let person of this.persons) {
+                if (person.name == oldPerson.name) {
+                    person.name = editPerson.name;
+                    person.groups = editPerson.groups;
+                    break;
+                }
+            }
+
             // change group membership
             let person = {
                 person: editPerson,
                 share: 1,
             };
             for (let group of this.groups) {
-                // add person to group
-                if (groupInPerson(editPerson, group) && !personInGroup(editPerson, group)) {
+                if (groupInPerson(editPerson, group) && !personInGroup(oldPerson, group)) {
+                    // add person to group
                     group.members.push(person);
-                } else if (!groupInPerson(editPerson, group) && personInGroup(editPerson, group)) { // remove person from group 
+                } else if (!groupInPerson(editPerson, group) && personInGroup(oldPerson, group)) {
+                    // remove person from group 
                     let index = group.members.indexOf(editPerson);
                     group.members.splice(index, 1);
                 }
             }
 
-            // change name in expenses
-            // for (let expense of this.expenses) {
-            //     if (oldName == expense.personName) {
-            //         expense.personName = person.name;
-            //     }
-            // }
             updateBalance(this.groups, this.persons, this.expenses);
         },
         removePerson(person) {
