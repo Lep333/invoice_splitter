@@ -1,27 +1,17 @@
 <template>
     <NavItem parentName="groups"></NavItem>
     <span class="button" @click="this.showAddGroupDialog = true">Add Group</span>
-    <div id="addGroupDialog" v-show="showAddGroupDialog">
-        <label for="newGroupInput">Group Name</label>
-        <input id="newGroupInput" v-model="newGroup">
-        <div class="button" @click="this.addGroup()">Add Group</div>
-        <div class="button" @click="showAddGroupDialog = false">Cancel</div>
-    </div>
-    <div id="editGroupDialog" v-show="showEditGroupDialog">
-        <label for="newGroupInput">Group Name</label>
-        <input id="newGroupInput" v-model="currentEditGroup.groupName">
-        <div id="personGrid">
-            <template v-for="caption in this.editGroupCaptions">
-                <div>{{ caption }}</div>
-            </template>
-            <template v-for="el in this.currentEditGroup.members">
-                <div>{{ el.name }}</div>
-                <input type="number" v-model="el.share">
-                <div>{{ this.currentEditGroup.expenses * el.share / getSharesSum(this.currentEditGroup) }}</div>
-            </template>
-        </div>
-        <div class="button" @click="this.editGroup()">Edit Group</div>
-    </div>
+    <AddGroup
+        v-show="this.showAddGroupDialog"
+        @add-group="addGroup"
+        @add-group-cancel="this.showAddGroupDialog = false">
+    </AddGroup>
+    <EditGroup
+        v-show="this.showEditGroupDialog"
+        :editGroupObj="currentEditGroup"
+        @edit-group="editGroup"
+        @edit-group-cancel="this.showEditGroupDialog = false">
+    </EditGroup>
     <div id="groupList">
         <template v-for="el in this.groupsListCaptions" :key="el">
             <div> {{ el }} </div>
@@ -34,7 +24,9 @@
                 </template>
             </div>
             <div>{{ el.expenses }}</div>
-            <div @click="openEditDialog(el)"> edit </div>
+            <div>
+                <span class="button" @click="openEditDialog(el)"> edit </span>
+            </div>
         </template>
     </div>
 </template>
@@ -42,12 +34,14 @@
 <script>
 import { billSplitterStore } from '@/store';
 import NavItem from './NavItem.vue';
+import AddGroup from './AddGroup.vue';
+import EditGroup from './EditGroup.vue';
 
 export default {
   data() {
     return {
-        newGroup: "",
         currentEditGroup: { groupName: ""},
+        oldGroup: "",
         groupsListCaptions: ["Name", "Members", "Expenses", ""],
         editGroupCaptions: ["Name", "Share", "Amount"],
         showAddGroupDialog: false,
@@ -56,18 +50,19 @@ export default {
   },
   components: {
     NavItem,
+    AddGroup,
+    EditGroup,
   },
   methods: {
-    addGroup() {
+    addGroup(groupName) {
         const store = billSplitterStore();
-        if (this.newGroup != "") {
+        if (groupName != "") {
             let group = {
-                groupName: this.newGroup,
+                groupName: groupName,
                 members: [],
                 expenses: 0,
             }
             store.addGroup(group);
-            this.newGroup = "";
             this.showAddGroupDialog = false;
         }
     },
@@ -82,28 +77,18 @@ export default {
         return sum;
     },
     openEditDialog(el) {
-        this.currentEditGroup = el;
+        this.oldGroup = el;
+        this.currentEditGroup = JSON.parse(JSON.stringify(el));;
         this.showEditGroupDialog = true;
     },
-    editGroup() {
+    editGroup(editedGroup) {
         this.showEditGroupDialog = false;
         const store = billSplitterStore();
         for (let member of this.currentEditGroup.members) {
             member.share = parseFloat(member.share);
         }
+        store.editGroup(editedGroup, this.oldGroup);
         this.currentEditGroup = { groupName: ""};
-        store.updateBalance();
-    },
-    getSharesSum(el) {
-        console.log(el.expenses);
-        let sum = 0;
-        for (let member of el.members) {
-            sum += member.share;
-        }
-        return sum;
-    },
-    test(el) {
-        return el.expenses / getSharesSum(this.currentEditGroup);
     },
   },
   computed: {
@@ -121,22 +106,9 @@ export default {
 </script>
 
 <style scoped>
-#addGroupDialog {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    box-shadow: rgba(244, 230, 230, 0.826) 0px 3px 8px;
-    position: relative;
-    top: 30vh;
-}
-
 #groupList {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr 1fr;
-}
-
-#editGroupDialog {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
 }
 
 #personGrid {

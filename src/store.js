@@ -1,5 +1,4 @@
 import { defineStore } from "pinia";
-import { toRaw } from "vue";
 
 function groupInPerson(person, group) {
     for (let g of person.groups) {
@@ -123,6 +122,29 @@ export const billSplitterStore = defineStore('billSplitter', {
                     group.members.splice(index, 1);
                 }
             }
+
+            updateBalance(this.groups, this.persons, this.expenses);
+        },
+        editGroup(editedGroup, oldGroup) {
+            console.log("hier");
+            for (let person of oldGroup.members) {
+                console.log(oldGroup);
+                let i = 0;
+                for (let group of person.person.groups) {
+                    console.log(group);
+                    if (group == oldGroup.groupName) {
+                        console.log("CHANGE");
+                        person.person.groups[i] = editedGroup.groupName;
+                    }
+                    i++;
+                }
+            }
+            
+            for (let key in editedGroup) {
+                oldGroup[key] = editedGroup[key];
+            }
+
+
 
             updateBalance(this.groups, this.persons, this.expenses);
         },
