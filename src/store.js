@@ -57,20 +57,15 @@ export const billSplitterStore = defineStore('billSplitter', {
         getExpenses: (state) => state.expenses,
     },
     actions: {
-        addPerson(newPerson) {
-            this.persons.push(newPerson);
-            let person = {
-                person: newPerson,
-                share: 1,
+        async addPerson(newPerson) {
+            const requestOptions = {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ id: "", name: newPerson.name })
             };
-            for (let groupName of newPerson.groups) {
-                for (let group of this.groups) {
-                    if (groupName == group.groupName) {
-                        group.members.push(person);
-                    }
-                }
-            }
-            updateBalance(this.groups, this.persons, this.expenses);
+            let response = await fetch("http://localhost:8000/person/", requestOptions);
+            let data = await response.json();
+            console.log("response: ", data);
         },
         addGroup(newGroup) {
             this.groups.push(newGroup);

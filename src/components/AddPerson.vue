@@ -32,7 +32,7 @@ export default {
                     personGroups.push(this.groups[i].groupName);
                 }
         }
-        let newPersonObj = {name: this.newPerson, groups: personGroups, expenses: 0.0, balance: 0.0};
+        let newPersonObj = {id: "", name: this.newPerson};
         this.$emit("add-person", newPersonObj);
         this.newPerson = "";
         this.newPersonGroups = [];
