@@ -17,7 +17,7 @@
             <div> {{ el }} </div>
         </template>
         <template v-for="el in this.getGroups" :key="el">
-            <div>{{ el.groupName }}</div>
+            <div>{{ el.name }}</div>
             <div>
                 <template v-for="person in el.members">
                     <span class="person">{{ person.person.name }}</span>

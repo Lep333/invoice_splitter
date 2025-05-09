@@ -61,14 +61,21 @@ export const billSplitterStore = defineStore('billSplitter', {
             const requestOptions = {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ id: "", name: newPerson.name })
+                body: JSON.stringify({ person: {name: newPerson.name} })
             };
-            let response = await fetch("http://localhost:8000/person/", requestOptions);
+            let response = await fetch("http://localhost:8000/persons/", requestOptions);
             let data = await response.json();
-            console.log("response: ", data);
+            this.persons = data;
         },
-        addGroup(newGroup) {
-            this.groups.push(newGroup);
+        async addGroup(newGroup) {
+            const requestOptions = {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ name: newGroup.groupName })
+            };
+            let response = await fetch("http://localhost:8000/groups/", requestOptions);
+            let data = await response.json();
+            this.groups = data;
         },
         addExpense(newExpense) {
             this.expenses.push(newExpense);
@@ -143,18 +150,15 @@ export const billSplitterStore = defineStore('billSplitter', {
 
             updateBalance(this.groups, this.persons, this.expenses);
         },
-        removePerson(person) {
-            for (let group of this.groups) {
-                group.members = group.members.filter((el) => el.person.name != person.name);
-                console.log(group.members.length);
-            }
-
-            let personExpenses = this.expenses.filter((el) => el.personName == person.name);
-            for (let expense of personExpenses) {
-                expense.personName = "";
-            }
-            this.persons = this.persons.filter((el) => person.name != el.name);
-            updateBalance(this.groups, this.persons, this.expenses);
+        async removePerson(person) {
+            const requestOptions = {
+                method: "DELETE",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({})
+            };
+            let response = await fetch(`http://localhost:8000/persons/${person.id}`, requestOptions);
+            let data = await response.json();
+            this.persons = data;
         },
         doFinalBilling() {
             let personNames = [];
