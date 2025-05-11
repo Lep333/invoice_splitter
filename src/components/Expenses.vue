@@ -12,8 +12,8 @@
             </select>
             <label for="groupName">Group Name</label>
             <select name="groupName" v-model="groupName">
-                <template v-for="group in this.getGroupsOfPerson()" :key="group">
-                    <option> {{ group }} </option>
+                <template v-for="group in this.getGroups" :key="group">
+                    <option> {{ group.name }} </option>
                 </template>
             </select>
             <label for="description">Description</label>

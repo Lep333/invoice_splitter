@@ -57,11 +57,14 @@ export const billSplitterStore = defineStore('billSplitter', {
         getExpenses: (state) => state.expenses,
     },
     actions: {
-        async addPerson(newPerson) {
+        async addPerson(newPerson, personGroups) {
             const requestOptions = {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ person: {name: newPerson.name} })
+                body: JSON.stringify({
+                    person: {name: newPerson.name},
+                    personGroups: { personGroups},
+                })
             };
             let response = await fetch("http://localhost:8000/persons/", requestOptions);
             let data = await response.json();

@@ -58,10 +58,10 @@ export default {
     EditPerson,
   },
   methods: {
-    addPerson(person) {
+    addPerson(person, personGroups) {
         const store = billSplitterStore();
         this.showDialog = false;
-        store.addPerson(person);
+        store.addPerson(person, personGroups);
     },
     editPerson(person) {
         this.editPersonObj = JSON.parse(JSON.stringify(person));

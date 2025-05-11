@@ -1,43 +1,30 @@
 import uuid
-from uuid import UUID
 from typing import Union
-
+from uuid import UUID
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
-class PersonBase(BaseModel):
+class Person(BaseModel):
     name: str
 
-class PersonIn(PersonBase):
-    pass
-
-class PersonOut(PersonBase):
-    id: UUID
-
-class GroupBase(BaseModel):
+class Group(BaseModel):
     name: str
-
-class GroupIn(GroupBase):
-    pass
-
-class GroupOut(GroupBase):
-    id: UUID
 
 class PersonGroup(BaseModel):
-    person_id: UUID
-    group_id: UUID
-    share: int
+    person_name: str
+    group_name: str
+    share: int | None = 0
 
-class ExpensesBase(BaseModel):
-    person_id: UUID
-    group_id: UUID
+class ExpenseBase(BaseModel):
+    person_name: str
+    group_name: str
     description: str
 
-class ExpensesIn(ExpensesBase):
+class ExpenseIn(ExpenseBase):
     pass
 
-class ExpensesOut(ExpensesBase):
+class ExpenseOut(ExpenseBase):
     id: UUID
 
 app = FastAPI()
@@ -61,38 +48,36 @@ persons_groups = []
 expenses = []
 
 @app.post("/persons/")
-def create_person(person: PersonIn, person_groups: list[PersonGroup] = None) -> list[PersonOut]:
+def create_person(person: Person, person_groups: list[PersonGroup] = None) -> list[Person]:
     global persons
-    new_per = PersonOut(**person.model_dump(), id=uuid.uuid4())
-    persons.append(new_per)
+    persons.append(person)
     return persons
 
-@app.delete("/persons/{person_id}")
-def delete_person(person_id: UUID) -> list[PersonOut]:
+@app.delete("/persons/{person_name}")
+def delete_person(person_name: str) -> list[Person]:
     global persons
-    persons = [person for person in persons if person.id != person_id]
+    persons = [person for person in persons if person.name != person_name]
     return persons
 
 @app.post("/groups/")
-def create_group(group: GroupIn) -> list[GroupOut]:
-    new_group = GroupOut(**group.model_dump(), id=uuid.uuid4())
-    groups.append(new_group)
+def create_group(group: Group) -> list[Group]:
+    groups.append(group)
     return groups
 
-@app.delete("/groups/{group_id}")
-def delete_group(group_id: UUID) -> list[GroupOut]:
+@app.delete("/groups/{group_name}")
+def delete_group(group_name: str) -> list[Group]:
     global groups
-    groups = [group for group in groups if group.id != group_id]
+    groups = [group for group in groups if group.name != group_name]
     return groups
 
 @app.post("/expenses/")
-def create_expense(expense: ExpensesIn) -> list[ExpensesOut]:
-    new_expense = ExpensesOut(**expense.model_dump, id=uuid.uuid4())
+def create_expense(expense: ExpenseIn) -> list[ExpenseOut]:
+    new_expense = ExpenseOut(**expense.model_dump(), id=uuid.uuid4())
     expenses.append(new_expense)
     return expenses
 
 @app.delete("/expenses/{expense_id}")
-def delete_expense(expense_id: UUID) -> list[ExpensesOut]:
+def delete_expense(expense_id: str) -> list[ExpenseOut]:
     global expenses
     expenses = [expense for expense in expenses if expense.id != expense_id]
     return expenses
