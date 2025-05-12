@@ -22,7 +22,7 @@
         <div> {{ el.name }} </div>
         <div> 
             <template v-for="group in el.groups" :key="group">
-            <span class="group"> {{ group }} </span>
+            <span class="group"> {{ group.name }} </span>
             </template>
         </div> 
         <div>  {{ el.expenses }} </div> 

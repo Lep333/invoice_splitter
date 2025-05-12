@@ -28,8 +28,8 @@
                 <div> {{ caption }} </div>
             </template>
             <template v-for="el in this.getExpenses" :key="el">
-                <div> {{ el.personName }} </div>
-                <div> {{ el.groupName }} </div>
+                <div> {{ el.person_name }} </div>
+                <div> {{ el.group_name }} </div>
                 <div> {{ el.description }} </div>
                 <div> {{ el.amount }} </div>
             </template>
@@ -60,8 +60,8 @@ export default {
             this.showAddExpenseDialog = false;
             const store = billSplitterStore();
             let expense = { 
-                personName: this.personName,
-                groupName: this.groupName,
+                person_name: this.personName,
+                group_name: this.groupName,
                 description: this.description,
                 amount: parseFloat(this.amount)
             };

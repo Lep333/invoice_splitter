@@ -11,6 +11,10 @@ class Person(BaseModel):
 class Group(BaseModel):
     name: str
 
+class PersonOut(Person):
+    groups: list[Group]
+    expenses: float | None = 0
+
 class PersonGroup(BaseModel):
     person_name: str
     group_name: str
@@ -20,6 +24,7 @@ class ExpenseBase(BaseModel):
     person_name: str
     group_name: str
     description: str
+    amount: float
 
 class ExpenseIn(ExpenseBase):
     pass
@@ -42,22 +47,42 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-persons = []
+persons : list[Person] = []
 groups = []
 persons_groups = []
 expenses = []
 
+def create_person_out() -> list[PersonOut]:
+    persons_out = []
+    for person in persons:
+        groups_of_person = []
+        expense_sum = 0
+        for pg in persons_groups:
+            if pg.person_name == person.name:
+                groups_of_person.append(Group(name=pg.group_name))
+        for expense in expenses:
+            if person.name == expense.person_name:
+                expense_sum += expense.amount
+        persons_out.append(PersonOut(**person.model_dump(), groups=groups_of_person, expenses=expense_sum))
+    return persons_out
+
+@app.get("/persons/")
+def fetch_person() -> list[PersonOut]:
+    return create_person_out()
+
 @app.post("/persons/")
-def create_person(person: Person, person_groups: list[PersonGroup] = None) -> list[Person]:
-    global persons
+def create_person(person: Person, person_groups: list[PersonGroup] = None) -> list[PersonOut]:
+    global persons, persons_groups
     persons.append(person)
-    return persons
+    print(person_groups)
+    persons_groups.extend(person_groups)
+    return create_person_out()
 
 @app.delete("/persons/{person_name}")
-def delete_person(person_name: str) -> list[Person]:
+def delete_person(person_name: str) -> list[PersonOut]:
     global persons
     persons = [person for person in persons if person.name != person_name]
-    return persons
+    return create_person_out()
 
 @app.post("/groups/")
 def create_group(group: Group) -> list[Group]:

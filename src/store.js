@@ -62,8 +62,8 @@ export const billSplitterStore = defineStore('billSplitter', {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    person: {name: newPerson.name},
-                    personGroups: { personGroups},
+                    person: { name: newPerson.name },
+                    person_groups: personGroups,
                 })
             };
             let response = await fetch("http://localhost:8000/persons/", requestOptions);
@@ -80,28 +80,17 @@ export const billSplitterStore = defineStore('billSplitter', {
             let data = await response.json();
             this.groups = data;
         },
-        addExpense(newExpense) {
-            this.expenses.push(newExpense);
-            for (let group of this.groups) {
-                if (group.groupName == newExpense.groupName) {
-                    group.expenses += newExpense.amount;
-                }
-            }
-            for (let person of this.persons) {
-                if (person.name == newExpense.personName) {
-                    person.expenses += newExpense.amount;
-                }
-                let balance = 0;
-                for (let groupName of person.groups) {
-                    for (let group of this.groups) {
-                        if (groupName == group.groupName) {
-                            balance += group.expenses / group.members.length;
-                        }
-                    }
-                }
-                person.balance = person.expenses - balance;
-            }
-            updateBalance(this.groups, this.persons, this.expenses);
+        async addExpense(newExpense) {
+            const requestOptions = {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    ...newExpense,
+                })
+            };
+            let response = await fetch("http://localhost:8000/expenses/", requestOptions);
+            let data = await response.json();
+            this.expenses = data;
         },
         editPerson(editPerson, oldPerson) {
             for (let person of this.persons) {
@@ -159,7 +148,7 @@ export const billSplitterStore = defineStore('billSplitter', {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({})
             };
-            let response = await fetch(`http://localhost:8000/persons/${person.id}`, requestOptions);
+            let response = await fetch(`http://localhost:8000/persons/${person.name}`, requestOptions);
             let data = await response.json();
             this.persons = data;
         },
