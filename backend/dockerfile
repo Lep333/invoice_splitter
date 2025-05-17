@@ -1,9 +1,0 @@
-FROM python:3.9
-
-RUN pip install fastapi
-
-COPY ./fastapi .
-
-EXPOSE 8000
-
-ENTRYPOINT [ "fastapi", "dev", "main.py" ]

@@ -14,11 +14,16 @@ class Group(BaseModel):
 class PersonOut(Person):
     groups: list[Group]
     expenses: float | None = 0
+    balance: float | None = 0
+
+class GroupOut(Group):
+    members: list[Person]
+    expenses: float | None = 0
 
 class PersonGroup(BaseModel):
     person_name: str
     group_name: str
-    share: int | None = 0
+    share: int | None = 1
 
 class ExpenseBase(BaseModel):
     person_name: str
@@ -47,10 +52,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-persons : list[Person] = []
-groups = []
-persons_groups = []
-expenses = []
+persons: list[PersonOut] = []
+groups: list[Group] = []
+persons_groups: list[PersonGroup] = []
+expenses: list[ExpenseOut] = []
 
 def create_person_out() -> list[PersonOut]:
     persons_out = []
@@ -65,6 +70,20 @@ def create_person_out() -> list[PersonOut]:
                 expense_sum += expense.amount
         persons_out.append(PersonOut(**person.model_dump(), groups=groups_of_person, expenses=expense_sum))
     return persons_out
+
+def create_groups_out() -> list[GroupOut]:
+    groups_out = []
+    for group in groups:
+        members = []
+        expense_sum = 0
+        for expense in expenses:
+            if expense.group_name == group.name:
+                expense_sum += expense.amount
+        for pg in persons_groups:
+            if pg.group_name == group.name:
+                members.append(Person(name=pg.person_name))
+        groups_out.append(GroupOut(**group.model_dump(), expenses=expense_sum, members=members))
+    return groups_out
 
 @app.get("/persons/")
 def fetch_person() -> list[PersonOut]:
@@ -85,9 +104,9 @@ def delete_person(person_name: str) -> list[PersonOut]:
     return create_person_out()
 
 @app.post("/groups/")
-def create_group(group: Group) -> list[Group]:
+def create_group(group: Group) -> list[GroupOut]:
     groups.append(group)
-    return groups
+    return create_groups_out()
 
 @app.delete("/groups/{group_name}")
 def delete_group(group_name: str) -> list[Group]:
@@ -106,3 +125,39 @@ def delete_expense(expense_id: str) -> list[ExpenseOut]:
     global expenses
     expenses = [expense for expense in expenses if expense.id != expense_id]
     return expenses
+
+@app.post("/final_billing")
+def final_billing() -> list[PersonOut]:
+    expenses_of_groups = dict()
+    expenses_of_persons = dict()
+    persons_with_memberships = create_person_out()
+    groups_total_shares = dict()
+    for expense in expenses:
+        if not expenses_of_groups.get(expense.group_name):
+            expenses_of_groups[expense.group_name] = expense.amount
+        else:
+            expenses_of_groups[expense.group_name] += expense.amount
+        if not expenses_of_persons.get(expense.person_name):
+            expenses_of_persons[expense.person_name] = dict()
+        if not expenses_of_persons[expense.person_name].get(expense.group_name):
+            expenses_of_persons[expense.person_name][expense.group_name] = expense.amount
+        else:
+            expenses_of_persons[expense.person_name][expense.group_name] += expense.amount
+
+    for group in groups:
+        for pg in persons_groups:
+            if group.name == pg.group_name:
+                if not groups_total_shares.get(group.name):
+                    groups_total_shares[group.name] = pg.share
+                else:
+                    groups_total_shares[group.name] += pg.share
+    for person in persons_with_memberships:
+        balance = 0
+        persons_memberships = dict()
+        for pg in persons_groups:
+            if pg.person_name == person.name:
+                persons_memberships[pg.group_name] = pg.share
+            personal_obligation = expenses_of_groups[pg.group_name] * pg.share / groups_total_shares[pg.group_name]
+            balance += expenses_of_persons[person.name][pg.group_name] - personal_obligation
+        person.balance = balance
+    return persons_with_memberships

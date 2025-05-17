@@ -152,45 +152,15 @@ export const billSplitterStore = defineStore('billSplitter', {
             let data = await response.json();
             this.persons = data;
         },
-        doFinalBilling() {
-            let personNames = [];
-            for (let person of this.persons) {
-                personNames.push(person.name);
-            }
-            let group = {
-                groupName: "FINAL BILLING",
-                members: personNames,
-                expenses: 0,
+        async doFinalBilling() {
+            const requestOptions = {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({})
             };
-            this.addGroup(group);
-            let debtors = this.persons.filter((el) => el.balance < 0);
-            let creditors = this.persons.filter((el) => el.balance > 0);
-            for (let debtor of debtors) {
-                let balance = -debtor.balance;
-                for (let creditor of creditors) {
-                    if (debtor.balance > -0.1) {
-                        break;
-                    }
-                    if (creditor.balance > 0.1) {
-                        let amount = Math.min(balance, creditor.balance);
-                        balance -= amount;
-                        let expense = {
-                            personName: debtor.name,
-                            groupName: "FINAL BILLING",
-                            description: `pays ${creditor.name}`,
-                            amount: amount,
-                        };
-                        let expense2 = {
-                            personName: creditor.name,
-                            groupName: "FINAL BILLING",
-                            description: `gets payed by ${debtor.name}`,
-                            amount: -amount,
-                        };
-                        this.addExpense(expense);
-                        this.addExpense(expense2);
-                    }
-                }
-            }
+            let response = await fetch(`http://localhost:8000/final_billing`, requestOptions);
+            let data = await response.json();
+            this.persons = data;
         },
     }
 })

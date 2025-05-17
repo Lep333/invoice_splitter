@@ -20,7 +20,7 @@
             <div>{{ el.name }}</div>
             <div>
                 <template v-for="person in el.members">
-                    <span class="person">{{ person.person.name }}</span>
+                    <span class="person">{{ person.name }}</span>
                 </template>
             </div>
             <div>{{ el.expenses }}</div>
