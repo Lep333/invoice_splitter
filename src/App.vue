@@ -1,5 +1,12 @@
 <script setup>
-import Person from './components/Persons.vue'
+import { onMounted } from 'vue'
+import { billSplitterStore } from '@/store';
+
+const store = billSplitterStore()
+
+onMounted(() => {
+  store.fetchAll() // This runs on every page load / refresh
+})
 </script>
 
 <template>

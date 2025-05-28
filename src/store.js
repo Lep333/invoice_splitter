@@ -57,6 +57,18 @@ export const billSplitterStore = defineStore('billSplitter', {
         getExpenses: (state) => state.expenses,
     },
     actions: {
+        async fetchAll() {
+            const requestOptions = {
+                method: "GET",
+                headers: { "Content-Type": "application/json" },
+            };
+            let persons = await fetch(`http://localhost:8000/persons/`, requestOptions);
+            this.persons = await persons.json();
+            let groups = await fetch(`http://localhost:8000/groups/`, requestOptions);
+            this.groups = await groups.json();
+            let expenses = await fetch(`http://localhost:8000/expenses/`, requestOptions);
+            this.expenses = await expenses.json();
+        },
         async addPerson(newPerson, personGroups) {
             const requestOptions = {
                 method: "POST",
@@ -66,9 +78,8 @@ export const billSplitterStore = defineStore('billSplitter', {
                     person_groups: personGroups,
                 })
             };
-            let response = await fetch("http://localhost:8000/persons/", requestOptions);
-            let data = await response.json();
-            this.persons = data;
+            await fetch("http://localhost:8000/persons/", requestOptions);
+            await this.fetchAll();
         },
         async addGroup(newGroup) {
             const requestOptions = {
@@ -76,9 +87,8 @@ export const billSplitterStore = defineStore('billSplitter', {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ name: newGroup.groupName })
             };
-            let response = await fetch("http://localhost:8000/groups/", requestOptions);
-            let data = await response.json();
-            this.groups = data;
+            fetch("http://localhost:8000/groups/", requestOptions);
+            await this.fetchAll();
         },
         async addExpense(newExpense) {
             const requestOptions = {
@@ -88,9 +98,8 @@ export const billSplitterStore = defineStore('billSplitter', {
                     ...newExpense,
                 })
             };
-            let response = await fetch("http://localhost:8000/expenses/", requestOptions);
-            let data = await response.json();
-            this.expenses = data;
+            await fetch("http://localhost:8000/expenses/", requestOptions);
+            await this.fetchAll();
         },
         async editPerson(editPerson, personGroups, personName) {
             const requestOptions = {
@@ -101,9 +110,8 @@ export const billSplitterStore = defineStore('billSplitter', {
                     person_groups: personGroups,
                 })
             };
-            let response = await fetch(`http://localhost:8000/persons/${personName}`, requestOptions);
-            let data = await response.json();
-            this.persons = data;
+            await fetch(`http://localhost:8000/persons/${personName}`, requestOptions);
+            await this.fetchAll();
         },
         async editGroup(groupNameNew, personGroups, groupName) {
             const requestOptions = {
@@ -114,9 +122,8 @@ export const billSplitterStore = defineStore('billSplitter', {
                     person_groups: personGroups,
                 })
             };
-            let response = await fetch(`http://localhost:8000/groups/${groupName}`, requestOptions);
-            let data = await response.json();
-            this.persons = data;
+            await fetch(`http://localhost:8000/groups/${groupName}`, requestOptions);
+            await this.fetchAll();
         },
         async removePerson(person) {
             const requestOptions = {
@@ -124,9 +131,8 @@ export const billSplitterStore = defineStore('billSplitter', {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({})
             };
-            let response = await fetch(`http://localhost:8000/persons/${person.name}`, requestOptions);
-            let data = await response.json();
-            this.persons = data;
+            await fetch(`http://localhost:8000/persons/${person.name}`, requestOptions);
+            await this.fetchAll();
         },
         async doFinalBilling() {
             const requestOptions = {
@@ -134,9 +140,8 @@ export const billSplitterStore = defineStore('billSplitter', {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({})
             };
-            let response = await fetch(`http://localhost:8000/final_billing`, requestOptions);
-            let data = await response.json();
-            this.persons = data;
+            await fetch(`http://localhost:8000/final_billing`, requestOptions);
+            await this.fetchAll();
         },
     }
 })

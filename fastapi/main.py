@@ -139,6 +139,10 @@ def delete_group(group_name: str) -> list[Group]:
     groups = [group for group in groups if group.name != group_name]
     return groups
 
+@app.get("/expenses/")
+def get_expenses() -> list[ExpenseOut]:
+    return expenses
+
 @app.post("/expenses/")
 def create_expense(expense: ExpenseIn) -> list[ExpenseOut]:
     new_expense = ExpenseOut(**expense.model_dump(), id=uuid.uuid4())
@@ -182,7 +186,7 @@ def final_billing() -> list[PersonOut]:
         for pg in persons_groups:
             if pg.person_name == person.name:
                 persons_memberships[pg.group_name] = pg.share
-            personal_obligation = expenses_of_groups[pg.group_name] * pg.share / groups_total_shares[pg.group_name]
-            balance += expenses_of_persons[person.name][pg.group_name] - personal_obligation
+                personal_obligation = expenses_of_groups[pg.group_name] * pg.share / groups_total_shares[pg.group_name]
+                balance += expenses_of_persons[person.name][pg.group_name] - personal_obligation
         person.balance = balance
     return persons_with_memberships
