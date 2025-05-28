@@ -3,16 +3,16 @@
         <div id="editGroupDialogHeader">Edit Group</div>
         <div class="editGroupDialogGrid">
             <label for="newGroupInput">Group Name</label>
-            <input id="newGroupInput" v-model="editGroupObj.groupName">
+            <input id="newGroupInput" v-model="editGroupObj.name">
         </div>
         <div id="editGroupMemberGrid">
             <template v-for="caption in this.editGroupCaptions">
                 <div>{{ caption }}</div>
             </template>
-            <template v-for="el in this.editGroupObj.members">
-                <div>{{ el.person.name }}</div>
-                <input type="number" v-model="el.share">
-                <div>{{ this.editGroupObj.expenses * el.share / getSharesSum(this.editGroupObj) }}</div>
+            <template v-for="mem in this.editGroupObj.members">
+                <div>{{ mem.person_name }}</div>
+                <input type="number" v-model="mem.share">
+                <div>{{ this.editGroupObj.expenses * mem.share / getSharesSum(this.editGroupObj) }}</div>
             </template>
         </div>
         <div class="editGroupDialogGrid">

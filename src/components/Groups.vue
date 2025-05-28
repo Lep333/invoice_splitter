@@ -19,8 +19,8 @@
         <template v-for="el in this.getGroups" :key="el">
             <div>{{ el.name }}</div>
             <div>
-                <template v-for="person in el.members">
-                    <span class="person">{{ person.name }}</span>
+                <template v-for="mem in el.members">
+                    <span class="person">{{ mem.person_name }}</span>
                 </template>
             </div>
             <div>{{ el.expenses }}</div>
@@ -84,10 +84,10 @@ export default {
     editGroup(editedGroup) {
         this.showEditGroupDialog = false;
         const store = billSplitterStore();
-        for (let member of this.currentEditGroup.members) {
+        for (let member of editedGroup.members) {
             member.share = parseFloat(member.share);
         }
-        store.editGroup(editedGroup, this.oldGroup);
+        store.editGroup(editedGroup.name, editedGroup.members, this.oldGroup.name);
         this.currentEditGroup = { groupName: ""};
     },
   },

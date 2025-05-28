@@ -6,7 +6,7 @@
             <input id="name"  v-model="editPersonObj.name">
             <template v-for="(group, index) in this.groups" :key="group">
                 <input :id="group.groupName" type="checkbox" v-model="newPersonGroups[index]">
-                <label :for="group.groupName"> {{ group.groupName }} </label>
+                <label :for="group.groupName"> {{ group.name }} </label>
             </template>
             <span id="editPersonButton" class="button" @click="editPersonComplete()">Edit Person</span>
             <span id="cancelEditButton" class="button" @click="cancelEditingPerson()">Cancel</span>
@@ -28,11 +28,14 @@ export default {
         let personGroups = [];
         for (let i = 0; i < this.groups.length; i++) {
                 if (this.newPersonGroups[i]) {
-                    personGroups.push(this.groups[i].groupName);
+                    personGroups.push({
+                        "person_name": this.editPersonObj.name,
+                        "group_name": this.groups[i].name
+                    });
                 }
         }
         this.editPersonObj.groups = personGroups;
-        this.$emit('edit-person', {name: this.editPersonObj.name, groups: personGroups});
+        this.$emit('edit-person', {name: this.editPersonObj.name}, personGroups);
         this.test = "";
     },
     cancelEditingPerson() {

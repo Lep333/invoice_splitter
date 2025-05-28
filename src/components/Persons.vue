@@ -68,9 +68,9 @@ export default {
         this.editPersonOld = person;
         this.showEditDialog = true;
     },
-    editPersonComplete(person) {
+    editPersonComplete(person, personGroups) {
         const store = billSplitterStore();
-        store.editPerson(person, this.editPersonOld);
+        store.editPerson(person, personGroups, this.editPersonOld.name);
         this.showEditDialog = false;
     },
     cancelEditingPerson() {

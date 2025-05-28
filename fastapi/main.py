@@ -16,14 +16,14 @@ class PersonOut(Person):
     expenses: float | None = 0
     balance: float | None = 0
 
-class GroupOut(Group):
-    members: list[Person]
-    expenses: float | None = 0
-
 class PersonGroup(BaseModel):
     person_name: str
     group_name: str
     share: int | None = 1
+
+class GroupOut(Group):
+    members: list[PersonGroup]
+    expenses: float | None = 0
 
 class ExpenseBase(BaseModel):
     person_name: str
@@ -81,7 +81,7 @@ def create_groups_out() -> list[GroupOut]:
                 expense_sum += expense.amount
         for pg in persons_groups:
             if pg.group_name == group.name:
-                members.append(Person(name=pg.person_name))
+                members.append(pg)
         groups_out.append(GroupOut(**group.model_dump(), expenses=expense_sum, members=members))
     return groups_out
 
@@ -97,15 +97,40 @@ def create_person(person: Person, person_groups: list[PersonGroup] = None) -> li
     persons_groups.extend(person_groups)
     return create_person_out()
 
+@app.put("/persons/{person_name}")
+def change_person(person_name: str, person: Person, person_groups: list[PersonGroup] = None) -> list[PersonOut]:
+    global persons, persons_groups
+    print(person_name, person, person_groups)
+    persons = [person for person in persons if person.name != person_name]
+    persons_groups = [pg for pg in persons_groups if pg.person_name != person_name]
+    # TODO: change name in expenses
+    persons.append(person)
+    persons_groups.extend(person_groups)
+    return create_person_out()
+
 @app.delete("/persons/{person_name}")
 def delete_person(person_name: str) -> list[PersonOut]:
     global persons
     persons = [person for person in persons if person.name != person_name]
     return create_person_out()
 
+@app.get("/groups/")
+def get_groups() -> list[GroupOut]:
+    return create_groups_out()
+
 @app.post("/groups/")
 def create_group(group: Group) -> list[GroupOut]:
     groups.append(group)
+    return create_groups_out()
+
+@app.put("/groups/{group_name}")
+def change_group(group_name: str, group: Group, person_groups: list[PersonGroup] = None) -> list[GroupOut]:
+    global groups, persons_groups
+    groups = [group for group in groups if group.name != group_name]
+    persons_groups = [pg for pg in persons_groups if pg.group_name != group_name]
+    # TODO: change name in expenses
+    groups.append(group)
+    persons_groups.extend(person_groups)
     return create_groups_out()
 
 @app.delete("/groups/{group_name}")

@@ -92,55 +92,31 @@ export const billSplitterStore = defineStore('billSplitter', {
             let data = await response.json();
             this.expenses = data;
         },
-        editPerson(editPerson, oldPerson) {
-            for (let person of this.persons) {
-                if (person.name == oldPerson.name) {
-                    person.name = editPerson.name;
-                    person.groups = editPerson.groups;
-                    break;
-                }
-            }
-
-            // change group membership
-            let person = {
-                person: editPerson,
-                share: 1,
+        async editPerson(editPerson, personGroups, personName) {
+            const requestOptions = {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    person: { name: editPerson.name },
+                    person_groups: personGroups,
+                })
             };
-            for (let group of this.groups) {
-                if (groupInPerson(editPerson, group) && !personInGroup(oldPerson, group)) {
-                    // add person to group
-                    group.members.push(person);
-                } else if (!groupInPerson(editPerson, group) && personInGroup(oldPerson, group)) {
-                    // remove person from group 
-                    let index = group.members.indexOf(editPerson);
-                    group.members.splice(index, 1);
-                }
-            }
-
-            updateBalance(this.groups, this.persons, this.expenses);
+            let response = await fetch(`http://localhost:8000/persons/${personName}`, requestOptions);
+            let data = await response.json();
+            this.persons = data;
         },
-        editGroup(editedGroup, oldGroup) {
-            console.log("hier");
-            for (let person of oldGroup.members) {
-                console.log(oldGroup);
-                let i = 0;
-                for (let group of person.person.groups) {
-                    console.log(group);
-                    if (group == oldGroup.groupName) {
-                        console.log("CHANGE");
-                        person.person.groups[i] = editedGroup.groupName;
-                    }
-                    i++;
-                }
-            }
-            
-            for (let key in editedGroup) {
-                oldGroup[key] = editedGroup[key];
-            }
-
-
-
-            updateBalance(this.groups, this.persons, this.expenses);
+        async editGroup(groupNameNew, personGroups, groupName) {
+            const requestOptions = {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    group: { name: groupNameNew },
+                    person_groups: personGroups,
+                })
+            };
+            let response = await fetch(`http://localhost:8000/groups/${groupName}`, requestOptions);
+            let data = await response.json();
+            this.persons = data;
         },
         async removePerson(person) {
             const requestOptions = {
