@@ -1,0 +1,19 @@
+services:
+  frontend:
+    build: ./frontend
+    ports:
+      - "5173:5173"
+    develop:
+      watch:
+      - action: sync
+        path: ./frontend
+        target: ./app
+  backend:
+    build: ./fastapi
+    ports:
+      - "8000:8000"
+    develop:
+      watch:
+      - action: sync
+        path: ./fastapi
+        target: ./app

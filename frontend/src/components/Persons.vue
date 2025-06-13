@@ -40,7 +40,6 @@ import { billSplitterStore } from '@/store';
 import NavItem from './NavItem.vue';
 import AddPerson from './AddPerson.vue';
 import EditPerson from './EditPerson.vue';
-import { onMounted } from 'vue';
 
 export default {
   data() {

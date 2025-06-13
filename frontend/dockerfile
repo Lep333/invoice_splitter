@@ -1,0 +1,15 @@
+FROM node:24
+
+WORKDIR /app
+
+COPY package.json .
+
+RUN npm install -g npm
+
+RUN npm install
+
+COPY . .
+
+EXPOSE 5173
+
+ENTRYPOINT [ "npm", "run", "dev" ]
