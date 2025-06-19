@@ -5,7 +5,6 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
-print("jo")
 class Person(BaseModel):
     name: str
 
@@ -188,6 +187,45 @@ def final_billing() -> list[PersonOut]:
             if pg.person_name == person.name:
                 persons_memberships[pg.group_name] = pg.share
                 personal_obligation = expenses_of_groups[pg.group_name] * pg.share / groups_total_shares[pg.group_name]
-                balance += expenses_of_persons[person.name][pg.group_name] - personal_obligation
+                expense_available = expenses_of_persons[person.name].get(pg.group_name) if expenses_of_persons.get(person.name) else 0
+                expenses_of_person = expenses_of_persons[person.name][pg.group_name] \
+                    if expense_available else 0
+                balance +=  expenses_of_person - personal_obligation
         person.balance = balance
+    # create compensation payments
+    final_billing_group_name = "FINAL_BILLING"
+    create_final_billing_group = True
+    for group in groups:
+        if group.name == final_billing_group_name:
+            create_final_billing_group = False
+    if create_final_billing_group:        
+        final_billing_group = Group(name=final_billing_group_name)
+        groups.append(final_billing_group)
+    for person in persons:
+        persons_groups.append(PersonGroup(person_name=person.name, group_name=final_billing_group_name))
+    for person in persons_with_memberships:
+        for other_person in persons_with_memberships:
+            while person.balance < 0.1:
+                if other_person.balance > 0:
+                    compensated_amount = min(-person.balance, other_person.balance)
+                    expenses.append(
+                        ExpenseOut(
+                            person_name=person.name,
+                            group_name=final_billing_group_name,
+                            description=f"{person.name} pays {other_person.name}",
+                            amount=compensated_amount,
+                            id=uuid.uuid4(),
+                        )
+                    )
+                    expenses.append(
+                        ExpenseOut(
+                            person_name=other_person.name,
+                            group_name=final_billing_group_name,
+                            description=f"{other_person.name} got payed by {person.name}",
+                            amount=-compensated_amount,
+                            id=uuid.uuid4(),
+                        )
+                    )
+                    person.balance += compensated_amount
+                    other_person.balance -= compensated_amount 
     return persons_with_memberships
