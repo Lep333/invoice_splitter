@@ -1,6 +1,6 @@
 <template>
     <nav>
-        <span id="appName">Bill Splitter</span>
+        <span id="appName">bill$plitter</span>
         <span class="navItem" :class="{ active: parentName == 'persons' }" @click="this.$router.push('/persons')">Persons</span>
         <span class="navItem" :class="{ active: parentName == 'groups' }" @click="this.$router.push('/groups')">Groups</span>
         <span class="navItem" :class="{ active: parentName == 'expenses' }" @click="this.$router.push('/expenses')">Expenses</span>

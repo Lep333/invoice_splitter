@@ -10,21 +10,18 @@ onMounted(() => {
 </script>
 
 <template>
-  <router-view ></router-view>
+  <html>
+    <head>
+      <link href="frontend/src/styles.css" type="text/css" rel="stylesheet">
+    </head>
+    <body class="text-gray-900">
+      <router-view ></router-view>
+    </body>
+  </html>
 </template>
 
 <style>
-html {
-  background-color: rgb(29, 29, 29);
-  color: whitesmoke;
-}
+@reference "tailwindcss";
 
-.button {
-  text-align: center;
-  padding: .5vh;
-  margin-top: 2vh;
-  margin-right: .5vh;
-  background-color: rgb(19, 48, 110);
-  border-radius: 0.3vh;
-}
+button {    @apply bg-lime-200 rounded-md;  }
 </style>

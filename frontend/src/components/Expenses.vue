@@ -1,7 +1,7 @@
 <template>
     <NavItem parentName="expenses"></NavItem>
-    <span class="button" @click="showAddExpenseDialog = true">Add Expense</span>
-    <span class="button" @click="doFinalBilling()">Do Final Billing</span>
+        <button @click="showAddExpenseDialog = true">Add Expense</button>
+        <button @click="doFinalBilling()">Do Final Billing</button>
     <div id="expensesView">
         <div id="addExpenseDialog" v-show="showAddExpenseDialog">
             <label for="personName">Person Name</label>

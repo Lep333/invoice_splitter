@@ -1,15 +1,28 @@
 <template>
-    <div id="addPersonDialog">
-        <div id="addPersonDialogHeader">Add Person</div>
-        <div id="addPersonDialogGrid">
-            <label for="name" type="text">Name</label>
-            <input id="name"  v-model="newPerson">
-            <template v-for="(group, index) in groups" :key="group">
-                <input id="groupName" type="checkbox" v-model="newPersonGroups[index]">
-                <label for="groupName"> {{ group.name }} </label>
-            </template>
-            <span id="addPersonButton" class="button" @click="addPerson()">Add Person</span>
-            <span id="cancelButton" class="button" @click="cancelAddingPerson()">Cancel</span>
+    <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+        <div id="addPersonDialog" class="bg-white p-6 rounded-2xl shadow-xl w-96 max-w-full">
+            <div id="addPersonDialogHeader" class="text-center text-lg">Add Person</div>
+            <div>
+                <div class="grid grid-cols-2 gap-2">
+                    <label for="name" type="text">Name</label>
+                    <input id="name" class="border-black bg-gray-200 rounded-md text-center"  v-model="newPerson">
+                </div>
+                <div class="grid grid-cols-1 gap-2">
+                    <template v-for="(group, index) in groups" :key="group">
+                        <div v-if="!newPersonGroups[index]">
+                            <button class="line-through bg-gray-200 object-center" @click="setMembership(index)">{{ group.name }}</button>
+                        </div>
+                        <div v-else>
+                            <button @click="setMembership(index)">{{ group.name }}</button>
+                        </div>
+                    </template>
+                </div>
+
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+                <button id="addPersonButton" @click="addPerson()">Add Person</button>
+                <button id="cancelButton" @click="cancelAddingPerson()">Cancel</button>
+            </div>
         </div>
     </div>
 </template>
@@ -39,33 +52,18 @@ export default {
         this.$emit("add-person", newPersonObj, personGroups);
         this.newPerson = "";
         this.newPersonGroups = [];
-    },    
+    },
+    setMembership(index) {
+        this.newPersonGroups[index] = !this.newPersonGroups[index];
+    },
     cancelAddingPerson() {
         this.$emit("add-person-cancel");
         this.newPerson = "";
-        this.newPersonGroups = "";
+        this.newPersonGroups = [];
     },
   },
 }
 </script>
 
 <style scoped>
-#addPersonDialog {
-    padding: .8vw;
-    box-shadow: rgb(19, 48, 110) 0px 3px 8px;
-    position: absolute;
-    top: 30vh;
-    border-radius: 5px;
-}
-
-#addPersonDialogGrid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-}
-
-#addPersonDialogHeader {
-    text-align: center;
-    font-size: large;
-    margin: 1vh;
-}
 </style>

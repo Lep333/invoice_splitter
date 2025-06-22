@@ -13,25 +13,25 @@
         @edit-person="editPersonComplete"
         @edit-person-cancel="cancelEditingPerson">
     </EditPerson>
-    <span id="openAddPersonForm" class="button" @click="showDialog = true">Add Person</span>
-    <div id="personList">
-    <template v-for="el in this.personTableHeader" :key="el">
-        <div> {{ el }} </div>
-    </template>
-    <template v-for="el in this.getPersons" :key="el">
-        <div> {{ el.name }} </div>
-        <div> 
-            <template v-for="group in el.groups" :key="group">
-            <span class="group"> {{ group.name }} </span>
-            </template>
-        </div> 
-        <div>  {{ el.expenses }} </div> 
-        <div>  {{ el.balance }} </div>
-        <div>
-            <span class="button openEditPersonForm" @click="editPerson(el)"> edit </span>
-            <span class="button removePerson" @click="removePerson(el)"> remove  </span>
-        </div>
-    </template>
+    <button @click="showDialog = true">Add Person</button>
+    <div class="grid grid-cols-5">
+        <template v-for="el in this.personTableHeader" :key="el">
+            <div> {{ el }} </div>
+        </template>
+        <template v-for="el in this.getPersons" :key="el">
+            <div> {{ el.name }} </div>
+            <div>
+                <template v-for="group in el.groups" :key="group">
+                <span class="group"> {{ group.name }} </span>
+                </template>
+            </div> 
+            <div>  {{ el.expenses }} </div> 
+            <div>  {{ el.balance }} </div>
+            <div class="grid grid-cols-2 gap-2">
+                <button @click="editPerson(el)"> edit </button>
+                <button class="button removePerson" @click="removePerson(el)"> remove  </button>
+            </div>
+        </template>
     </div>
 </template>
 
@@ -99,16 +99,4 @@ export default {
 </script>
 
 <style scoped>
-#personList {
-    margin-top: 2vh;
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
-}
-
-.group {
-    margin: 5px;
-    padding: 3px;
-    background-color: green;
-    border-radius: 5px;
-}
 </style>
