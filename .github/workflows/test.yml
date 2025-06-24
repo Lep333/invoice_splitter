@@ -30,4 +30,4 @@ jobs:
         run: docker-compose -f compose.ci.yaml build
 
       - name: Run backend tests
-        run: docker-compose run --rm backend pytest
+        run: docker-compose -f compose.ci.yaml run --rm backend pytest
