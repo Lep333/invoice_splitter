@@ -9,11 +9,11 @@ services:
         path: ./frontend
         target: ./app
   backend:
-    build: ./fastapi
+    build: ./backend
     ports:
       - "8000:8000"
     develop:
       watch:
       - action: sync
-        path: ./fastapi
+        path: ./backend
         target: ./app
