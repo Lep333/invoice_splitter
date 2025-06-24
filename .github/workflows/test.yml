@@ -1,0 +1,33 @@
+name: CI - FastAPI Backend Tests
+
+on:
+  push:
+    branches: [ main, ci/cd ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  backend-tests:
+    runs-on: ubuntu-latest
+    services:
+      docker:
+        image: docker:24.0.5
+        options: >-
+          --privileged
+        ports:
+          - 8000:8000
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Compose
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y docker-compose
+
+      - name: Build containers
+        run: docker-compose build
+
+      - name: Run backend tests
+        run: docker-compose run --rm backend pytest
