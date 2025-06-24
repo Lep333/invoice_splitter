@@ -27,7 +27,7 @@ jobs:
           sudo apt-get install -y docker-compose
 
       - name: Build containers
-        run: docker-compose build
+        run: docker-compose build -f compose.ci.yaml
 
       - name: Run backend tests
         run: docker-compose run --rm backend pytest
