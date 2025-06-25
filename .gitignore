@@ -30,5 +30,6 @@ coverage
 *.tsbuildinfo
 
 # python
-.venv/*
-*/__pycache__/*
+.venv/
+venv/
+__pycache__/

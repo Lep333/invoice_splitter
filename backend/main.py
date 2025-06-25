@@ -62,8 +62,17 @@ def check_for_duplicate_person_name(person: Person):
         if person.name == existing_person.name:
             raise HTTPException(
                 status_code=400,
-                detail="Person name must be unique.",
+                detail="Person name have to be unique.",
             )
+
+def check_for_duplicate_group_name(group: Group):
+    for existing_group in groups:
+        if group.name == existing_group.name:
+            raise HTTPException(
+                status_code=400,
+                detail="Group name have to be unique."
+            )
+        
 def create_person_out() -> list[PersonOut]:
     persons_out = []
     for person in persons:
@@ -127,12 +136,14 @@ def get_groups() -> list[GroupOut]:
 
 @app.post("/groups/")
 def create_group(group: Group) -> list[GroupOut]:
+    check_for_duplicate_group_name(group)
     groups.append(group)
     return create_groups_out()
 
 @app.put("/groups/{group_name}")
 def change_group(group_name: str, group: Group, person_groups: list[PersonGroup] = None) -> list[GroupOut]:
     global groups, persons_groups
+    check_for_duplicate_group_name(group)
     groups = [group for group in groups if group.name != group_name]
     persons_groups = [pg for pg in persons_groups if pg.group_name != group_name]
     # TODO: change name in expenses
