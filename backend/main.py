@@ -164,6 +164,7 @@ def get_expenses() -> list[ExpenseOut]:
 @app.post("/expenses/")
 def create_expense(expense: ExpenseIn) -> list[ExpenseOut]:
     new_expense = ExpenseOut(**expense.model_dump(), id=uuid.uuid4())
+    # TODO: create expense only if person and group exist?
     expenses.append(new_expense)
     return expenses
 
