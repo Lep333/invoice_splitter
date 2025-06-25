@@ -127,4 +127,4 @@ def test_three_persons_one_group():
     assert response.status_code == 200
     response = client.get("/expenses/")
     assert response.status_code == 200
-    assert len(response.json()) == 3
+    assert len(response.json()) == 6

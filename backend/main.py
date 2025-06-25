@@ -177,8 +177,10 @@ def delete_expense(expense_id: str) -> list[ExpenseOut]:
 @app.post("/final_billing")
 def final_billing() -> list[PersonOut]:
     expenses_of_groups = { group.name:0 for group in groups }
-    expenses_of_persons = { person.name:{group.name:0} \
-        for person in persons for group in groups}
+    expenses_of_persons = { 
+        person.name:{group.name:0 for group in groups}
+            for person in persons
+        }
     persons_with_memberships = create_person_out()
     groups_total_shares = { group.name:0 for group in groups }
     
