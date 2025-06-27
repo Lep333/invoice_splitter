@@ -16,31 +16,49 @@
     </EditPerson>
     
     <div class="grid grid-cols-1 place-items-center">
-        <div class="w-3xl">
-            <button class="py-2 px-3 bg-lime-200 rounded  ml-0 justify-start" @click="showDialog = true">
-                <span><img src="@/assets/add_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg"></span> <span>Add Person</span>
-            </button>
-        </div>
-        <template v-for="el in this.getPersons" :key="el">
-            <div class="grid grid-cols-5 hover:shadow-md hover:inset-shadow-sm py-2 px-3 rounded w-3xl items-center justify-center">
-                <div> {{ el.name }} </div>
-                <div>
-                    <template v-for="group in el.groups" :key="group">
-                        <div class="group border-solid outline-2 outline-gray-300 m-2 p-1 py-2 px-3 rounded"> {{ group.name }} </div>
-                    </template>
-                </div> 
-                <div>  {{ "Expenses: " + el.expenses }} </div> 
-                <div>  {{ "Balance: " + el.balance }} </div>
-                <div class="grid grid-cols-2 gap-1 place-items-center">
-                    <button @click="editPerson(el)">
-                        <img src="@/assets/edit_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg" alt="edit">
-                    </button>
-                    <button class="button removePerson" @click="removePerson(el)">
-                        <img src="@/assets/delete_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg" alt="delete">
-                    </button>
-                </div>
+        <div @click="this.showPersonDetails = !this.showPersonDetails" class="flex flex-row w-3xl border border-solid border-black rounded-t">
+            <div class="text-4xl flex items-center gap-2">
+                <img class="w-7 h-7" v-if="this.showPersonDetails" src="@/assets/arrow_drop_down_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg" alt="show details">
+                <img class="w-7 h-7" v-else src="@/assets/arrow_drop_up_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg" alt="collapse details">
+                Persons
             </div>
-        </template>
+            <div class="ml-auto">
+                <button class="py-2 px-3 bg-lime-200 rounded ml-0 flex flex-row" @click="showDialog = true">
+                    <img src="@/assets/add_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg">
+                    Add Person
+                </button>
+            </div>
+        </div>
+        <div v-if="this.showPersonDetails" class="w-3xl border-b border-r border-l border-solid border-black rounded-b">
+            <template v-for="el in this.getPersons" :key="el">
+                <div class="grid grid-cols-5 hover:shadow-md hover:inset-shadow-sm py-2 px-3  items-center justify-center rounded">
+                    <div> {{ el.name }} </div>
+                    <div class="flex flex-row">
+                        <template v-for="group in el.groups" :key="group">
+                            <div class="group border border-solid m-2 p-1 py-2 px-3 rounded"> {{ group.name }} </div>
+                        </template>
+                    </div> 
+                    <div>  {{ "Expenses: " + el.expenses }} </div> 
+                    <div>  {{ "Balance: " + el.balance }} </div>
+                    <div class="grid grid-cols-2 gap-1 place-items-center">
+                        <button @click="editPerson(el)">
+                            <img src="@/assets/edit_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg" alt="edit">
+                        </button>
+                        <button class="button removePerson" @click="removePerson(el)">
+                            <img src="@/assets/delete_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg" alt="delete">
+                        </button>
+                    </div>
+                </div>
+            </template>
+        </div>
+        <div class="flex flex-row flex-wrap border-b border-r border-l w-3xl rounded-b" v-else>
+            <template v-for="el in this.getPersons" :key="el">
+                <div class="flex items-center justify-center m-2 py-2 px-3 items-center justify-center rounded-xl gap-2 border text-xs shadow-md">
+                    <span> {{ el.name }} </span>
+                    <span>  {{ el.balance }} </span>
+                </div>
+            </template>
+        </div>
     </div>
 </template>
 
@@ -55,6 +73,7 @@ export default {
     return {
       showDialog: false,
       showEditDialog: false,
+      showPersonDetails: false,
       personTableHeader: ["Name", "Groups", "Expenses", "Balance", ""],
       editPersonObj: {name: ""},
       editOldName: "",
