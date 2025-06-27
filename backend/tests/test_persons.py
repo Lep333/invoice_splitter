@@ -59,6 +59,20 @@ def test_change_person():
     assert response.status_code == 200
     assert any(new_name == person["name"] for person in response.json())
 
+def test_change_person_keep_name():
+    test_name = "alice"
+    response = client.post("/persons/",
+            json={"person": {"name": test_name},
+                "person_groups": []
+            })
+    # change name
+    new_name = "alice"
+    response = client.put(f"/persons/{test_name}",
+        json={"person": {"name": new_name},
+            "person_groups": []
+        })
+    assert response.status_code == 200
+
 def test_change_person_duplicate_name():
     test_name = "alice"
     new_name = "bob"

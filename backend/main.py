@@ -116,7 +116,8 @@ def create_person(person: Person, person_groups: list[PersonGroup] = None) -> li
 @app.put("/persons/{person_name}")
 def change_person(person_name: str, person: Person, person_groups: list[PersonGroup] = None) -> list[PersonOut]:
     global persons, persons_groups
-    check_for_duplicate_person_name(person)
+    if person_name != person.name:
+        check_for_duplicate_person_name(person)
     persons = [person for person in persons if person.name != person_name]
     persons_groups = [pg for pg in persons_groups if pg.person_name != person_name]
     # TODO: change name in expenses
@@ -143,7 +144,8 @@ def create_group(group: Group) -> list[GroupOut]:
 @app.put("/groups/{group_name}")
 def change_group(group_name: str, group: Group, person_groups: list[PersonGroup] = None) -> list[GroupOut]:
     global groups, persons_groups
-    check_for_duplicate_group_name(group)
+    if group_name != group.name:
+        check_for_duplicate_group_name(group)
     groups = [group for group in groups if group.name != group_name]
     persons_groups = [pg for pg in persons_groups if pg.group_name != group_name]
     # TODO: change name in expenses
