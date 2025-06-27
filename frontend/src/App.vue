@@ -21,7 +21,4 @@ onMounted(() => {
 </template>
 
 <style>
-@reference "tailwindcss";
-
-button {    @apply bg-lime-200 rounded-md;  }
 </style>

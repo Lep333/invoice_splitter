@@ -1,27 +1,26 @@
 <template>
     <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
         <div id="addPersonDialog" class="bg-white p-6 rounded-2xl shadow-xl w-96 max-w-full">
-            <div id="addPersonDialogHeader" class="text-center text-lg">Add Person</div>
+            <div class="text-center text-2xl mb-4">Add Person</div>
             <div>
                 <div class="grid grid-cols-2 gap-2">
                     <label for="name" type="text">Name</label>
                     <input id="name" class="border-black bg-gray-200 rounded-md text-center"  v-model="newPerson">
                 </div>
-                <div class="grid grid-cols-1 gap-2">
+                <div class="grid grid-cols-1 gap-2 justify-items-center m-2">
                     <template v-for="(group, index) in groups" :key="group">
                         <div v-if="!newPersonGroups[index]">
                             <button class="line-through bg-gray-200 object-center" @click="setMembership(index)">{{ group.name }}</button>
                         </div>
                         <div v-else>
-                            <button @click="setMembership(index)">{{ group.name }}</button>
+                            <button class="bg-cyan-300" @click="setMembership(index)">{{ group.name }}</button>
                         </div>
                     </template>
                 </div>
-
             </div>
             <div class="grid grid-cols-2 gap-2">
-                <button id="addPersonButton" @click="addPerson()">Add Person</button>
-                <button id="cancelButton" @click="cancelAddingPerson()">Cancel</button>
+                <button class="bg-lime-200" @click="addPerson()">Add Person</button>
+                <button class="bg-lime-200" @click="cancelAddingPerson()">Cancel</button>
             </div>
         </div>
     </div>

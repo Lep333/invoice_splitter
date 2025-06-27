@@ -4,6 +4,6 @@
 
 @layer components {
   button {
-    @apply bg-lime-200 py-2 px-3 rounded hover:bg-lime-300 transition;
+    @apply hover:shadow-md hover:inset-shadow-sm py-2 px-3 rounded transition;
   }
 }
