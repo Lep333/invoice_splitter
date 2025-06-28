@@ -18,9 +18,9 @@ onMounted(() => {
     <head>
       <link href="frontend/src/styles.css" type="text/css" rel="stylesheet">
     </head>
-    <body class="text-gray-900">
-      <NavItem></NavItem>
-      <div class="grid grid-cols-1 gap-2">
+    <body class="text-gray-900 m-2">
+      <NavItem class="m-2"></NavItem>
+      <div class="grid grid-cols-1 gap-3">
         <Persons></Persons>
         <Groups></Groups>
         <Expenses></Expenses>

@@ -1,36 +1,37 @@
 <template>
-        <button @click="showAddExpenseDialog = true">Add Expense</button>
-        <button @click="doFinalBilling()">Do Final Billing</button>
-    <div id="expensesView">
-        <div id="addExpenseDialog" v-show="showAddExpenseDialog">
-            <label for="personName">Person Name</label>
-            <select name="personName" v-model="personName">
-                <template v-for="person in this.getPersons" :key="person">
-                    <option> {{ person.name }} </option>
-                </template>
-            </select>
-            <label for="groupName">Group Name</label>
-            <select name="groupName" v-model="groupName">
-                <template v-for="group in this.getGroupsOfPerson()" :key="group">
-                    <option> {{ group.name }} </option>
-                </template>
-            </select>
-            <label for="description">Description</label>
-            <input id="description" v-model="description">
-            <label for="amount">Amount</label>
-            <input id="amount" v-model="amount">
-            <div class="button" @click="addExpense()">Add Expense</div>
-            <div class="button" @click="cancel()">Cancel</div>
+    <div class="grid grid-cols-1 place-items-center">
+        <div @click="this.showExpenseDetails = !this.showExpenseDetails" class="flex flex-row w-3xl border border-solid border-black rounded-t shadow-md">
+            <div class="text-4xl flex items-center gap-2">
+                <img class="w-7 h-7" v-if="this.showExpenseDetails" src="@/assets/arrow_drop_down_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg" alt="show details">
+                <img class="w-7 h-7" v-else src="@/assets/arrow_drop_up_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg" alt="collapse details">
+                Expenses
+            </div>
+            <div class="ml-auto">
+                <div class="grid grid-cols-2 gap-2">
+                    <button class="py-2 px-3 bg-lime-200 rounded ml-0 flex flex-row" @click="showAddExpenseDialog = true">
+                        <img src="@/assets/add_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg">
+                        Add Expense
+                    </button>
+                    <button class="py-2 px-3 bg-lime-200 rounded ml-0 flex flex-row" @click="doFinalBilling()">
+                        <img src="@/assets/add_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg">
+                        Do Final Billing
+                    </button>
+                </div>
+            </div>
         </div>
-        <div id="expensesList">
-            <template v-for="caption in this.expensesListCaption" :key="caption">
-                <div> {{ caption }} </div>
-            </template>
+        <AddExpense 
+            @add-person="showAddExpenseDialog = false"
+            @add-person-cancel="cancel"
+            v-show="showAddExpenseDialog">
+        </AddExpense>
+        <div class="w-3xl border-b border-r border-l border-solid border-black rounded-b">
             <template v-for="el in this.getExpenses" :key="el">
-                <div> {{ el.person_name }} </div>
-                <div> {{ el.group_name }} </div>
-                <div> {{ el.description }} </div>
-                <div> {{ el.amount }} </div>
+                <div class="grid grid-cols-4 hover:bg-lime-200 m-2">
+                    <div> {{ el.person_name }} </div>
+                    <div> {{ el.group_name }} </div>
+                    <div> {{ el.description }} </div>
+                    <div> {{ el.amount }} </div>
+                </div>
             </template>
         </div>
     </div>
@@ -38,7 +39,7 @@
 
 <script>
 import { billSplitterStore } from '@/store';
-import NavItem from './NavItem.vue';
+import AddExpense from './AddExpense.vue';
 
 export default {
     data() {
@@ -49,10 +50,11 @@ export default {
             amount: "",
             expensesListCaption: ["Person", "Group", "Description", "Amount"],
             showAddExpenseDialog: false,
+            showExpenseDetails: false,
         }
     },
     components: {
-        NavItem,
+        AddExpense,
     },
     methods: {
         addExpense() {
@@ -68,6 +70,7 @@ export default {
             this.cancel();
         },
         cancel() {
+            console.log("hello?");
             this.showAddExpenseDialog = false;
             this.personName = "";
             this.groupName = "";

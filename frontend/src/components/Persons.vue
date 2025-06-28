@@ -30,11 +30,11 @@
         </div>
         <div v-if="this.showPersonDetails" class="w-3xl border-b border-r border-l border-solid border-black rounded-b">
             <template v-for="el in this.getPersons" :key="el">
-                <div class="grid grid-cols-5 hover:shadow-md hover:inset-shadow-sm py-2 px-3 items-center justify-center rounded">
+                <div class="grid grid-cols-5 hover:bg-lime-200 m-2 items-center justify-center rounded">
                     <div> {{ el.name }} </div>
                     <div class="flex flex-row">
                         <template v-for="group in el.groups" :key="group">
-                            <div class="group border border-solid m-2 p-1 py-2 px-3 rounded"> {{ group.name }} </div>
+                            <div class="group border border-solid m-2 rounded"> {{ group.name }} </div>
                         </template>
                     </div> 
                     <div>  {{ "Expenses: " + el.expenses }} </div> 
