@@ -1,11 +1,15 @@
 <template>
-    <div id="addGroupDialog">
-        <div id="addGroupDialogHeader">Add Group</div>
-        <div id="addGroupDialogGrid">
-            <label for="newGroupInput">Group Name</label>
-            <input id="newGroupInput" v-model="groupName">
-            <span class="button" @click="this.$emit('add-group', this.groupName)">Add Group</span>
-            <span class="button" @click="this.$emit('add-group-cancel')">Cancel</span>
+    <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+        <div class="bg-white p-6 rounded-2xl shadow-xl w-96 max-w-full">
+            <div class="text-center text-2xl mb-4">Add Group</div>
+            <div class="grid grid-cols-2 gap-2 m-2">
+                <label for="newGroupInput">Group Name</label>
+                <input class="border-black bg-gray-200 rounded-md text-center" v-model="groupName">
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+                <button class="bg-lime-200" @click="this.$emit('add-group', this.groupName)">Add Group</button>
+                <button class="bg-lime-200" @click="this.$emit('add-group-cancel')">Cancel</button>
+            </div>
         </div>
     </div>
 </template>

@@ -1,5 +1,4 @@
 <template>
-    <NavItem parentName="expenses"></NavItem>
         <button @click="showAddExpenseDialog = true">Add Expense</button>
         <button @click="doFinalBilling()">Do Final Billing</button>
     <div id="expensesView">

@@ -1,5 +1,4 @@
 <template>
-    <NavItem parentName="persons"></NavItem>
     <AddPerson
         v-show="showDialog"
         :groups="getGroups"
@@ -31,7 +30,7 @@
         </div>
         <div v-if="this.showPersonDetails" class="w-3xl border-b border-r border-l border-solid border-black rounded-b">
             <template v-for="el in this.getPersons" :key="el">
-                <div class="grid grid-cols-5 hover:shadow-md hover:inset-shadow-sm py-2 px-3  items-center justify-center rounded">
+                <div class="grid grid-cols-5 hover:shadow-md hover:inset-shadow-sm py-2 px-3 items-center justify-center rounded">
                     <div> {{ el.name }} </div>
                     <div class="flex flex-row">
                         <template v-for="group in el.groups" :key="group">

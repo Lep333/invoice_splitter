@@ -1,6 +1,6 @@
 <template>
     <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-        <div id="addPersonDialog" class="bg-white p-6 rounded-2xl shadow-xl w-96 max-w-full">
+        <div class="bg-white p-6 rounded-2xl shadow-xl w-96 max-w-full">
             <div class="text-center text-2xl mb-4">Add Person</div>
             <div>
                 <div class="grid grid-cols-2 gap-2">

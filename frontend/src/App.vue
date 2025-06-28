@@ -1,6 +1,10 @@
 <script setup>
 import { onMounted } from 'vue'
 import { billSplitterStore } from '@/store';
+import NavItem from './components/NavItem.vue';
+import Persons from '@/components/Persons.vue';
+import Groups from '@/components/Groups.vue';
+import Expenses from './components/Expenses.vue';
 
 const store = billSplitterStore()
 
@@ -15,7 +19,12 @@ onMounted(() => {
       <link href="frontend/src/styles.css" type="text/css" rel="stylesheet">
     </head>
     <body class="text-gray-900">
-      <router-view ></router-view>
+      <NavItem></NavItem>
+      <div class="grid grid-cols-1 gap-2">
+        <Persons></Persons>
+        <Groups></Groups>
+        <Expenses></Expenses>
+      </div>
     </body>
   </html>
 </template>
