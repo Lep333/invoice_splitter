@@ -12,7 +12,7 @@ class Group(BaseModel):
     name: str
 
 class PersonOut(Person):
-    groups: list[Group]
+    groups: list[Group] | None = []
     expenses: float | None = 0
     balance: float | None = 0
 
@@ -75,6 +75,7 @@ def check_for_duplicate_group_name(group: Group):
         
 def create_person_out() -> list[PersonOut]:
     persons_out = []
+    update_balance()
     for person in persons:
         groups_of_person = []
         expense_sum = 0
@@ -84,7 +85,9 @@ def create_person_out() -> list[PersonOut]:
         for expense in expenses:
             if person.name == expense.person_name:
                 expense_sum += expense.amount
-        persons_out.append(PersonOut(**person.model_dump(), groups=groups_of_person, expenses=expense_sum))
+        person.expenses = expense_sum
+        person.groups = groups_of_person
+        persons_out.append(person)
     return persons_out
 
 def create_groups_out() -> list[GroupOut]:
@@ -109,7 +112,7 @@ def fetch_person() -> list[PersonOut]:
 def create_person(person: Person, person_groups: list[PersonGroup] = None) -> list[PersonOut]:
     global persons, persons_groups
     check_for_duplicate_person_name(person)
-    persons.append(person)
+    persons.append(PersonOut(**person.model_dump()))
     persons_groups.extend(person_groups)
     return create_person_out()
 
@@ -121,7 +124,7 @@ def change_person(person_name: str, person: Person, person_groups: list[PersonGr
     persons = [person for person in persons if person.name != person_name]
     persons_groups = [pg for pg in persons_groups if pg.person_name != person_name]
     # TODO: change name in expenses
-    persons.append(person)
+    persons.append(PersonOut(**person.model_dump()))
     persons_groups.extend(person_groups)
     return create_person_out()
 
@@ -173,17 +176,26 @@ def create_expense(expense: ExpenseIn) -> list[ExpenseOut]:
 @app.delete("/expenses/{expense_id}")
 def delete_expense(expense_id: str) -> list[ExpenseOut]:
     global expenses
-    expenses = [expense for expense in expenses if expense.id != expense_id]
+    print(expenses)
+    expenses = [expense for expense in expenses if str(expense.id) != expense_id]
     return expenses
 
 @app.post("/final_billing")
 def final_billing() -> list[PersonOut]:
+    final_billing_group_name = "FINAL_BILLING"
+    update_balance()
+    create_compensation_payment_group(final_billing_group_name)
+    do_compensation_payments(final_billing_group_name)
+
+    persons_with_memberships = create_person_out()
+    return persons_with_memberships
+
+def update_balance():
     expenses_of_groups = { group.name:0 for group in groups }
     expenses_of_persons = { 
         person.name:{group.name:0 for group in groups}
             for person in persons
         }
-    persons_with_memberships = create_person_out()
     groups_total_shares = { group.name:0 for group in groups }
     
     for expense in expenses:
@@ -195,7 +207,7 @@ def final_billing() -> list[PersonOut]:
             if group.name == pg.group_name:
                 groups_total_shares[group.name] += pg.share
 
-    for person in persons_with_memberships:
+    for person in persons:
         balance = 0
         persons_memberships = dict()
         for pg in persons_groups:
@@ -204,18 +216,13 @@ def final_billing() -> list[PersonOut]:
                 personal_obligation = expenses_of_groups[pg.group_name] * pg.share / groups_total_shares[pg.group_name]
                 expenses_of_person = expenses_of_persons[person.name][pg.group_name]
                 balance +=  expenses_of_person - personal_obligation
-        person.balance = balance
+        res = list(filter(lambda per: per.name == person.name, persons))[0]
+        res.balance = balance
 
-    final_billing_group_name = "FINAL_BILLING"
-    create_compensation_payment_group(final_billing_group_name)
-    do_compensation_payments(persons_with_memberships, final_billing_group_name)
-
-    return persons_with_memberships
-
-def do_compensation_payments(persons_with_memberships: list[PersonOut], final_billing_group_name: str):
-    for person in persons_with_memberships:
+def do_compensation_payments(final_billing_group_name: str):
+    for person in persons:
         while person.balance < -0.1:
-            for other_person in persons_with_memberships:
+            for other_person in persons:
                 if other_person.balance > 0:
                     compensated_amount = min(-person.balance, other_person.balance)
                     expenses.append(
