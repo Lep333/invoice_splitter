@@ -1,6 +1,7 @@
 from fastapi.testclient import TestClient
 import pytest
 from backend.main import app
+from backend.tests.test_groups import create_group
 
 client = TestClient(app)
 
@@ -95,14 +96,35 @@ def test_change_person_duplicate_name():
 
 def test_remove_person():
     test_name = "alice"
+    group_name = "test_group"
+    create_group(group_name)
     response = client.post("/persons/",
         json={"person": {"name": test_name},
-            "person_groups": []
+            "person_groups": [
+                {
+                    "person_name": test_name,
+                    "group_name": group_name
+                }
+            ]
         })
     assert response.status_code == 200
+    req = {
+        "person_name": f"{test_name}",
+        "group_name": f"{group_name}",
+        "description": "test",
+        "amount": 12.55,
+    }
+    response = client.post(
+        "/expenses/",
+        json=req
+    )
     response = client.get("/persons/")
     assert response.status_code == 200
     response = client.delete(f"/persons/{test_name}")
     assert response.status_code == 200
     assert not response.json()
     assert not any(test_name == person["name"] for person in response.json())
+    response = client.get("/groups")
+    assert not any(test_name == member["person_name"] for group in response.json() for member in group["members"])
+    response = client.get("/expenses")
+    assert not any(test_name == expense["person_name"] for expense in response.json())

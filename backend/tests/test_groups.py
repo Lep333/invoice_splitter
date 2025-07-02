@@ -102,7 +102,33 @@ def test_change_group_duplicate():
 
 def test_remove_group():
     test_name = "test_group"
+    test_person = "alice"
     test_create_group()
+    response = client.post("/persons/",
+    json={"person": {"name": test_person},
+        "person_groups": [
+            {
+                "person_name": test_person,
+                "group_name": test_name
+            }
+        ]
+    })
+    req = {
+        "person_name": f"{test_person}",
+        "group_name": f"{test_name}",
+        "description": "test",
+        "amount": 12.55,
+    }
+    response = client.post(
+        "/expenses/",
+        json=req
+    )
     response = client.delete(f"/groups/{test_name}")
     assert response.status_code == 200
     assert not any(test_name == group["name"] for group in response.json())
+    response = client.get("/persons")
+    assert response.status_code == 200
+    assert not any(test_name == group["name"] for person in response.json() for group in person["groups"])
+    response = client.get("/expenses")
+    assert response.status_code == 200
+    assert not any(expense["group_name"] == test_name for expense in response.json())

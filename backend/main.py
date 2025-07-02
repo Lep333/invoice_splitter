@@ -130,8 +130,12 @@ def change_person(person_name: str, person: Person, person_groups: list[PersonGr
 
 @app.delete("/persons/{person_name}")
 def delete_person(person_name: str) -> list[PersonOut]:
-    global persons
+    global persons, persons_groups
     persons = [person for person in persons if person.name != person_name]
+    persons_groups = [pg for pg in persons_groups if pg.person_name != person_name]
+    for expense in expenses:
+        if expense.person_name == person_name:
+            expense.person_name = ""
     return create_person_out()
 
 @app.get("/groups/")
@@ -158,8 +162,12 @@ def change_group(group_name: str, group: Group, person_groups: list[PersonGroup]
 
 @app.delete("/groups/{group_name}")
 def delete_group(group_name: str) -> list[Group]:
-    global groups
+    global groups, persons_groups
     groups = [group for group in groups if group.name != group_name]
+    persons_groups = [pg for pg in persons_groups if pg.group_name != group_name]
+    for expense in expenses:
+        if expense.group_name == group_name:
+            expense.group_name = ""
     return groups
 
 @app.get("/expenses/")
@@ -199,6 +207,8 @@ def update_balance():
     groups_total_shares = { group.name:0 for group in groups }
     
     for expense in expenses:
+        if expense.person_name == "" or expense.group_name == "":
+            continue
         expenses_of_groups[expense.group_name] += expense.amount
         expenses_of_persons[expense.person_name][expense.group_name] += expense.amount
 
