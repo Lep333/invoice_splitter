@@ -134,6 +134,24 @@ export const billSplitterStore = defineStore('billSplitter', {
             await fetch(`http://localhost:8000/persons/${person.name}`, requestOptions);
             await this.fetchAll();
         },
+        async removeGroup(group) {
+            const requestOptions = {
+                method: "DELETE",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({})
+            };
+            await fetch(`http://localhost:8000/groups/${group.name}`, requestOptions);
+            await this.fetchAll();
+        },
+        async removeExpense(expense) {
+            const requestOptions = {
+                method: "DELETE",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({})
+            };
+            await fetch(`http://localhost:8000/expenses/${expense.id}`, requestOptions);
+            await this.fetchAll();
+        },
         async doFinalBilling() {
             const requestOptions = {
                 method: "POST",

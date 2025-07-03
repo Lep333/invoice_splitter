@@ -16,4 +16,4 @@ services:
       watch:
       - action: sync
         path: ./backend
-        target: ./app
+        target: ./backend

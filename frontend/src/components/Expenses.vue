@@ -26,11 +26,20 @@
         </AddExpense>
         <div class="w-3xl border-b border-r border-l border-solid border-black rounded-b">
             <template v-for="el in this.getExpenses" :key="el">
-                <div class="grid grid-cols-4 hover:bg-lime-200 m-2">
+                <div v-if="el.compensation_payment && el.amount > 0" class="flex flex-row m-2 p-1 gap-2 border border-cyan-200 bg-cyan-50 rounded justify-center">
+                    <div> {{ el.person_name }} </div>
+                    <div><img src="@/assets/arrow_right_alt_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg"></div>
+                    <div> {{ el.description }} </div>
+                    <div> {{ el.amount + " €" }} </div>
+                </div>
+                <div class="grid grid-cols-5 hover:bg-lime-200 m-2" v-else-if="!el.compensation_payment">
                     <div> {{ el.person_name }} </div>
                     <div> {{ el.group_name }} </div>
                     <div> {{ el.description }} </div>
                     <div> {{ el.amount }} </div>
+                    <button @click="removeExpense(el)">
+                        <img src="@/assets/delete_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg" alt="delete">
+                    </button>
                 </div>
             </template>
         </div>
@@ -88,6 +97,10 @@ export default {
             const store = billSplitterStore();
             return store.doFinalBilling();
         },
+        removeExpense(el) {
+            const store = billSplitterStore();
+            return store.removeExpense(el);
+        }
     },
     computed: {
         getExpenses() {

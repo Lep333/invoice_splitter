@@ -36,6 +36,7 @@ class ExpenseIn(ExpenseBase):
 
 class ExpenseOut(ExpenseBase):
     id: UUID
+    compensation_payment: bool | None = False
 
 app = FastAPI()
 
@@ -56,6 +57,7 @@ persons: list[PersonOut] = []
 groups: list[Group] = []
 persons_groups: list[PersonGroup] = []
 expenses: list[ExpenseOut] = []
+FINAL_BILLING_GROUP_NAME = f"FINAL_BILLING_{ uuid.uuid4() }"
 
 def check_for_duplicate_person_name(person: Person):
     for existing_person in persons:
@@ -80,6 +82,8 @@ def create_person_out() -> list[PersonOut]:
         groups_of_person = []
         expense_sum = 0
         for pg in persons_groups:
+            if pg.group_name == FINAL_BILLING_GROUP_NAME:
+                continue
             if pg.person_name == person.name:
                 groups_of_person.append(Group(name=pg.group_name))
         for expense in expenses:
@@ -93,6 +97,8 @@ def create_person_out() -> list[PersonOut]:
 def create_groups_out() -> list[GroupOut]:
     groups_out = []
     for group in groups:
+        if group.name == FINAL_BILLING_GROUP_NAME:
+            continue
         members = []
         expense_sum = 0
         for expense in expenses:
@@ -190,10 +196,9 @@ def delete_expense(expense_id: str) -> list[ExpenseOut]:
 
 @app.post("/final_billing")
 def final_billing() -> list[PersonOut]:
-    final_billing_group_name = "FINAL_BILLING"
     update_balance()
-    create_compensation_payment_group(final_billing_group_name)
-    do_compensation_payments(final_billing_group_name)
+    create_compensation_payment_group()
+    do_compensation_payments()
 
     persons_with_memberships = create_person_out()
     return persons_with_memberships
@@ -229,7 +234,7 @@ def update_balance():
         res = list(filter(lambda per: per.name == person.name, persons))[0]
         res.balance = balance
 
-def do_compensation_payments(final_billing_group_name: str):
+def do_compensation_payments():
     for person in persons:
         while person.balance < -0.1:
             for other_person in persons:
@@ -238,31 +243,32 @@ def do_compensation_payments(final_billing_group_name: str):
                     expenses.append(
                         ExpenseOut(
                             person_name=person.name,
-                            group_name=final_billing_group_name,
-                            description=f"{person.name} pays {other_person.name}",
+                            group_name=FINAL_BILLING_GROUP_NAME,
+                            description=f"{other_person.name}",
                             amount=compensated_amount,
                             id=uuid.uuid4(),
+                            compensation_payment=True,
                         )
                     )
                     expenses.append(
                         ExpenseOut(
                             person_name=other_person.name,
-                            group_name=final_billing_group_name,
-                            description=f"{other_person.name} got payed by {person.name}",
+                            group_name=FINAL_BILLING_GROUP_NAME,
+                            description=f"{person.name}",
                             amount=-compensated_amount,
                             id=uuid.uuid4(),
+                            compensation_payment=True,
                         )
                     )
                     person.balance += compensated_amount
                     other_person.balance -= compensated_amount
 
-def create_compensation_payment_group(final_billing_group_name):
-    create_final_billing_group = True
+def create_compensation_payment_group():
     for group in groups:
-        if group.name == final_billing_group_name:
-            create_final_billing_group = False
-    if create_final_billing_group:        
-        final_billing_group = Group(name=final_billing_group_name)
-        groups.append(final_billing_group)
+        if group.name == FINAL_BILLING_GROUP_NAME:
+            return 
+         
+    final_billing_group = Group(name=FINAL_BILLING_GROUP_NAME)
+    groups.append(final_billing_group)
     for person in persons:
-        persons_groups.append(PersonGroup(person_name=person.name, group_name=final_billing_group_name))
+        persons_groups.append(PersonGroup(person_name=person.name, group_name=FINAL_BILLING_GROUP_NAME))

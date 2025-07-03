@@ -11,8 +11,8 @@
         @edit-group-cancel="this.showEditGroupDialog = false">
     </EditGroup>
     <div class="grid grid-cols-1 place-items-center">
-        <div @click="this.showGroupDetails = !this.showGroupDetails" class="flex flex-row w-3xl border border-solid border-black rounded-t">
-            <div class="text-4xl flex items-center gap-2">
+        <div class="flex flex-row w-3xl border border-solid border-black rounded-t">
+            <div @click="this.showGroupDetails = !this.showGroupDetails" class="text-4xl flex items-center gap-2 hover:bg-gray-200 px-2 rounded">
                 <img class="w-7 h-7" v-if="this.showGroupDetails" src="@/assets/arrow_drop_down_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg" alt="show details">
                 <img class="w-7 h-7" v-else src="@/assets/arrow_drop_up_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg" alt="collapse details">
                 Expense Groups
@@ -28,15 +28,18 @@
             <template v-for="el in this.getGroups" :key="el">
                 <div class="grid grid-cols-4 hover:bg-lime-200 items-center justify-center rounded m-2">
                     <div>{{ el.name }}</div>
-                    <div class="flex flex-row">
+                    <div class="flex flex-row gap-2">
                         <template v-for="mem in el.members">
-                            <div class="group border border-solid p-1 rounded-xl">{{ mem.person_name }}</div>
+                            <div class="group border border-solid p-1 rounded-lg">{{ mem.person_name }}</div>
                         </template>
                     </div>
                     <div>{{ el.expenses }}</div>
                     <div>
                         <button @click="openEditDialog(el)">
                             <img src="@/assets/edit_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg" alt="edit">
+                        </button>
+                        <button @click="removeGroup(el)">
+                            <img src="@/assets/delete_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg" alt="delete">
                         </button>
                     </div>
                 </div>
@@ -112,6 +115,10 @@ export default {
         store.editGroup(editedGroup.name, editedGroup.members, this.oldGroup.name);
         this.currentEditGroup = { groupName: ""};
     },
+    removeGroup(group) {
+        const store = billSplitterStore();
+        store.removeGroup(group);
+    }
   },
   computed: {
     getGroups() {
@@ -128,20 +135,4 @@ export default {
 </script>
 
 <style scoped>
-#groupList {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr;
-}
-
-#personGrid {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-}
-
-.person {
-  margin: 5px;
-  padding: 3px;
-  background-color: green;
-  border-radius: 5px;
-}
 </style>

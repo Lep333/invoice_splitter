@@ -7,7 +7,10 @@
                     <label for="name" type="text">Name</label>
                     <input id="name" class="border-black bg-gray-200 rounded-md text-center"  v-model="newPerson">
                 </div>
-                <div class="grid grid-cols-1 gap-2 justify-items-center m-2">
+                <div class="flex flex-row flex-wrap justify-items-center gap-2 mb-2 mt-2">
+                    <div>
+                        Participates in
+                    </div>
                     <template v-for="(group, index) in groups" :key="group">
                         <div v-if="!newPersonGroups[index]">
                             <button class="line-through bg-gray-200 object-center" @click="setMembership(index)">{{ group.name }}</button>

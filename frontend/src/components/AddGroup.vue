@@ -7,8 +7,8 @@
                 <input class="border-black bg-gray-200 rounded-md text-center" v-model="groupName">
             </div>
             <div class="grid grid-cols-2 gap-2">
-                <button class="bg-lime-200" @click="this.$emit('add-group', this.groupName)">Add Group</button>
-                <button class="bg-lime-200" @click="this.$emit('add-group-cancel')">Cancel</button>
+                <button class="bg-lime-200" @click="addGroup()">Add Group</button>
+                <button class="bg-lime-200" @click="cancelGroup()">Cancel</button>
             </div>
         </div>
     </div>
@@ -20,6 +20,16 @@ export default {
     return {
         groupName: "",
     }
+  },
+  methods: {
+    addGroup() {
+        this.$emit('add-group', this.groupName);
+        this.groupName = "";
+    },
+    cancelGroup() {
+        this.$emit('add-group-cancel');
+        this.groupName = "";
+    },
   },
   emits: ["add-group", "add-group-cancel"],
 }

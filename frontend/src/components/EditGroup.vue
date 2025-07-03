@@ -36,11 +36,11 @@ export default {
   props: ["editGroupObj"],
   methods: {
     getSharesSum(el) {
-        console.log(el.expenses);
         let sum = 0;
         for (let member of el.members) {
-            sum += member.share;
+            sum += parseInt(member.share);
         }
+        console.log(sum);
         return sum;
     },
   },
