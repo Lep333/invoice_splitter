@@ -7,9 +7,11 @@ client = TestClient(app)
 
 @pytest.fixture(autouse=True)
 def cleanup_memory():
-    from backend.main import persons, groups
+    from backend.main import persons, groups, persons_groups, expenses
     persons.clear()
     groups.clear()
+    persons_groups.clear()
+    expenses.clear()
 
 def test_get_person():
     test_name = "alice"
@@ -46,19 +48,47 @@ def test_create_person_duplicate_name():
 
 def test_change_person():
     test_name = "alice"
+    group_name = "test_group"
+    create_group(group_name)
     response = client.post("/persons/",
-            json={"person": {"name": test_name},
-                "person_groups": []
-            })
+        json={"person": {"name": test_name},
+            "person_groups": [
+                {
+                    "person_name": test_name,
+                    "group_name": group_name
+                }
+            ]
+        })
+    req = {
+        "person_name": f"{test_name}",
+        "group_name": f"{group_name}",
+        "description": "test",
+        "amount": 12.55,
+    }
+    response = client.post(
+        "/expenses/",
+        json=req
+    )
     # change name
     new_name = "bob"
     response = client.put(f"/persons/{test_name}",
         json={"person": {"name": new_name},
-            "person_groups": []
+            "person_groups": [
+                {
+                    "person_name": new_name,
+                    "group_name": group_name
+                }
+            ]
         })
     response = client.get("/persons/")
     assert response.status_code == 200
     assert any(new_name == person["name"] for person in response.json())
+    response = client.get("/groups")
+    assert response.status_code == 200
+    assert not any(test_name == member["person_name"] for group in response.json() for member in group["members"])
+    response = client.get("/expenses")
+    assert response.status_code == 200
+    assert not any(test_name == expense["group_name"] for expense in response.json())
 
 def test_change_person_keep_name():
     test_name = "alice"

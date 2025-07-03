@@ -132,6 +132,9 @@ def change_person(person_name: str, person: Person, person_groups: list[PersonGr
     # TODO: change name in expenses
     persons.append(PersonOut(**person.model_dump()))
     persons_groups.extend(person_groups)
+    for expense in expenses:
+        if expense.person_name == person_name:
+            expense.person_name = person.name
     return create_person_out()
 
 @app.delete("/persons/{person_name}")
@@ -164,6 +167,9 @@ def change_group(group_name: str, group: Group, person_groups: list[PersonGroup]
     # TODO: change name in expenses
     groups.append(group)
     persons_groups.extend(person_groups)
+    for expense in expenses:
+        if expense.group_name == group_name:
+            expense.group_name = group.name
     return create_groups_out()
 
 @app.delete("/groups/{group_name}")
