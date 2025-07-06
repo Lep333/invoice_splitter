@@ -1,6 +1,6 @@
 <template>
     <div class="grid grid-cols-1 place-items-center">
-        <div @click="this.showExpenseDetails = !this.showExpenseDetails" class="flex flex-row w-3xl border border-solid border-black rounded-t shadow-md">
+        <div @click="this.showExpenseDetails = !this.showExpenseDetails" class="flex flex-row w-3xl border border-solid border-black rounded-t">
             <div class="text-4xl flex items-center gap-2">
                 <img class="w-7 h-7" v-if="this.showExpenseDetails" src="@/assets/arrow_drop_down_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg" alt="show details">
                 <img class="w-7 h-7" v-else src="@/assets/arrow_drop_up_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg" alt="collapse details">
@@ -38,6 +38,12 @@
             @add-person-cancel="cancel"
             v-show="showAddExpenseDialog">
         </AddExpense>
+        <EditExpense
+            :editExpenseObj="editExpenseObj"
+            @edit-expense="showEditExpenseDialog = false"
+            @add-person-cancel="cancelEdit"
+            v-show="showEditExpenseDialog">
+        </EditExpense>
         <div class="w-3xl border-b border-r border-l border-solid border-black rounded-b">
             <template v-for="el in this.getExpenses" :key="el">
                 <div v-if="el.compensation_payment && el.amount > 0" class="flex flex-row m-2 p-1 gap-2 border border-cyan-200 bg-cyan-50 rounded justify-center">
@@ -51,9 +57,14 @@
                     <div> {{ el.group_name }} </div>
                     <div> {{ el.description }} </div>
                     <div> {{ el.amount }} </div>
-                    <button @click="removeExpense(el)">
-                        <img src="@/assets/delete_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg" alt="delete">
-                    </button>
+                    <div>
+                        <button @click="openEditDialog(el)">
+                            <img src="@/assets/edit_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg" alt="edit">
+                        </button>
+                        <button @click="removeExpense(el)">
+                            <img src="@/assets/delete_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg" alt="delete">
+                        </button>
+                    </div>
                 </div>
             </template>
         </div>
@@ -63,6 +74,7 @@
 <script>
 import { billSplitterStore } from '@/store';
 import AddExpense from './AddExpense.vue';
+import EditExpense from './EditExpense.vue';
 import { ref } from 'vue'
 
 export default {
@@ -74,12 +86,15 @@ export default {
             amount: "",
             expensesListCaption: ["Person", "Group", "Description", "Amount"],
             showAddExpenseDialog: false,
+            showEditExpenseDialog: false,
+            editExpenseObj: "",
             showExpenseDetails: false,
             importFile: ref(null),
         }
     },
     components: {
         AddExpense,
+        EditExpense,
     },
     methods: {
         addExpense() {
@@ -164,6 +179,17 @@ export default {
             anchor.target = '_blank';
             anchor.download = 'billsplitter.csv';
             anchor.click();
+        },
+        openEditDialog(el) {
+            let expense = {
+                ...el,
+            };
+            this.editExpenseObj = expense;
+            this.showEditExpenseDialog = true;
+        },
+        cancelEdit() {
+            this.editExpenseObj = "";
+            this.showEditExpenseDialog = false;
         },
     },
     computed: {

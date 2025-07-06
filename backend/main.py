@@ -193,6 +193,12 @@ def create_expense(expense: ExpenseIn) -> list[ExpenseOut]:
     expenses.append(new_expense)
     return expenses
 
+@app.put("/expenses/{expense_id}")
+def change_expense(expense_id: str, expense: ExpenseOut):
+    global expenses
+    expenses = [expense for expense in expenses if str(expense.id) != expense_id]
+    expenses.append(expense)
+
 @app.delete("/expenses/{expense_id}")
 def delete_expense(expense_id: str) -> list[ExpenseOut]:
     global expenses

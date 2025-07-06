@@ -13,7 +13,7 @@
                 <template v-for="mem in this.editGroupObj.members">
                     <div>{{ mem.person_name }}</div>
                     <input class="border-black bg-gray-200 rounded-md text-center" v-model="mem.share">
-                    <div>{{ (this.editGroupObj.expenses * mem.share / getSharesSum(this.editGroupObj)).toFixed(2) }}</div>
+                    <div>{{ (this.editGroupObj.expenses * mem.share / getSharesSum(this.editGroupObj)).toFixed(2) + " €" }}</div>
                 </template>
             </div>
             <div class="grid grid-cols-2 gap-2 mt-2">
