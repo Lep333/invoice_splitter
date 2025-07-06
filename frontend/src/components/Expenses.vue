@@ -20,6 +20,16 @@
                         <img src="@/assets/arrow_back_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg">
                         Undo Final Billing
                     </button>
+                    <div>
+                        <label for="csv_upload" class="py-2 px-3 bg-lime-200 rounded ml-0 flex flex-row">
+                            <img src="@/assets/arrow_back_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg">Import CSV
+                        </label>
+                        <input id="csv_upload" class="hidden" type="file" v-on:change="setFile" refs="csv">
+                    </div>
+                    <button class="py-2 px-3 bg-lime-200 rounded ml-0 flex flex-row" @click="downloadCSV()">
+                        <img src="@/assets/arrow_back_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg">
+                        Export CSV
+                    </button>
                 </div>
             </div>
         </div>
@@ -53,6 +63,7 @@
 <script>
 import { billSplitterStore } from '@/store';
 import AddExpense from './AddExpense.vue';
+import { ref } from 'vue'
 
 export default {
     data() {
@@ -64,6 +75,7 @@ export default {
             expensesListCaption: ["Person", "Group", "Description", "Amount"],
             showAddExpenseDialog: false,
             showExpenseDetails: false,
+            importFile: ref(null),
         }
     },
     components: {
@@ -117,6 +129,41 @@ export default {
                 }
             }
             return final_billing;
+        },
+        setFile(event) {
+            const store = billSplitterStore();
+            const selectedFile = event.target.files[0];
+            if (selectedFile) {
+                this.importFile = selectedFile;
+            
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const text = e.target.result;
+                    const rows = text.trim().split("\n");
+                    for (let row of rows) {
+                        let expense = row.split(",");
+                        let obj = { 
+                            person_name: expense[0],
+                            group_name: "",
+                            description: expense[2],
+                            amount: parseFloat(expense[3]),
+                        };
+                        store.addExpense(obj);
+                    }
+                }
+                reader.readAsText(this.importFile);
+            }
+        },
+        downloadCSV() {
+            let csv = "person,group,description,amount\n";
+            for (let expense of this.getExpenses) {
+                csv += `${expense.person_name},${expense.group_name},${expense.description},${expense.amount}\n`
+            }
+            const anchor = document.createElement('a');
+            anchor.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+            anchor.target = '_blank';
+            anchor.download = 'billsplitter.csv';
+            anchor.click();
         },
     },
     computed: {
