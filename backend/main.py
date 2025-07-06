@@ -209,6 +209,11 @@ def final_billing() -> list[PersonOut]:
     persons_with_memberships = create_person_out()
     return persons_with_memberships
 
+@app.post("/undo_final_billing")
+def undo_final_billing():
+    global expenses
+    expenses = [expense for expense in expenses if not expense.compensation_payment]
+
 def update_balance():
     expenses_of_groups = { group.name:0 for group in groups }
     expenses_of_persons = { 

@@ -12,9 +12,13 @@
                         <img src="@/assets/add_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg">
                         Add Expense
                     </button>
-                    <button class="py-2 px-3 bg-lime-200 rounded ml-0 flex flex-row" @click="doFinalBilling()">
-                        <img src="@/assets/add_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg">
+                    <button class="py-2 px-3 bg-lime-200 rounded ml-0 flex flex-row" v-if="final_billing_available()" @click="doFinalBilling()">
+                        <img src="@/assets/check_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg">
                         Do Final Billing
+                    </button>
+                    <button class="py-2 px-3 bg-lime-200 rounded ml-0 flex flex-row" @click="undoFinalBilling()" v-else>
+                        <img src="@/assets/arrow_back_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg">
+                        Undo Final Billing
                     </button>
                 </div>
             </div>
@@ -79,7 +83,6 @@ export default {
             this.cancel();
         },
         cancel() {
-            console.log("hello?");
             this.showAddExpenseDialog = false;
             this.personName = "";
             this.groupName = "";
@@ -97,10 +100,24 @@ export default {
             const store = billSplitterStore();
             return store.doFinalBilling();
         },
+        undoFinalBilling() {
+            const store = billSplitterStore();
+            return store.undoFinalBilling();
+        },
         removeExpense(el) {
             const store = billSplitterStore();
             return store.removeExpense(el);
-        }
+        },
+        final_billing_available() {
+            let final_billing = true;
+            for (let expense of this.getExpenses) {
+                if (expense.compensation_payment) {
+                    final_billing = false;
+                    break;
+                }
+            }
+            return final_billing;
+        },
     },
     computed: {
         getExpenses() {

@@ -161,5 +161,14 @@ export const billSplitterStore = defineStore('billSplitter', {
             await fetch(`http://localhost:8000/final_billing`, requestOptions);
             await this.fetchAll();
         },
+        async undoFinalBilling() {
+            const requestOptions = {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({})
+            };
+            await fetch(`http://localhost:8000/undo_final_billing`, requestOptions);
+            await this.fetchAll();
+        }
     }
 })
