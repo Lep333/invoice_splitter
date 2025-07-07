@@ -26,14 +26,14 @@
         </div>
         <div v-if="this.showGroupDetails" class="w-3xl border-b border-r border-l border-solid border-black rounded-b">
             <template v-for="el in this.getGroups" :key="el">
-                <div class="grid grid-cols-4 hover:bg-lime-200 items-center justify-center rounded m-2">
+                <div class="grid grid-cols-4 items-center justify-center rounded even:bg-cyan-50 px-2">
                     <div>{{ el.name }}</div>
                     <div class="flex flex-row gap-2">
                         <template v-for="mem in el.members">
                             <div class="group border border-solid p-1 rounded-lg">{{ mem.person_name }}</div>
                         </template>
                     </div>
-                    <div>{{ el.expenses }}</div>
+                    <div class="text-xl">{{ el.expenses.toFixed(2) + " €" }}</div>
                     <div>
                         <button @click="openEditDialog(el)">
                             <img src="@/assets/edit_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg" alt="edit">
@@ -42,6 +42,9 @@
                             <img src="@/assets/delete_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg" alt="delete">
                         </button>
                     </div>
+                    <div></div>
+                    <div></div>
+                    <div class="relative bottom-2">Expenses</div>
                 </div>
             </template>
         </div>

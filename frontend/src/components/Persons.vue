@@ -30,15 +30,15 @@
         </div>
         <div v-if="this.showPersonDetails" class="w-3xl border-b border-r border-l border-solid border-black rounded-b">
             <template v-for="el in this.getPersons" :key="el">
-                <div class="grid grid-cols-5 hover:bg-lime-200 m-2 items-center justify-center rounded">
+                <div class="grid grid-cols-5 items-center justify-center rounded even:bg-cyan-50 px-2">
                     <div> {{ el.name }} </div>
                     <div class="flex flex-row flex-wrap gap-1">
                         <template v-for="group in el.groups" :key="group">
                             <div class="border border-solid p-1 rounded-lg"> {{ group.name }} </div>
                         </template>
                     </div>
-                    <div>  {{ "Expenses: " + el.expenses }} </div> 
-                    <div>  {{ "Balance: " + el.balance }} </div>
+                    <div class="text-xl">  {{ el.expenses.toFixed(2) + " €"}} </div> 
+                    <div class="text-xl">  {{ el.balance.toFixed(2) + " €" }} </div>
                     <div class="grid grid-cols-2 gap-1 place-items-center">
                         <button @click="editPerson(el)">
                             <img src="@/assets/edit_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg" alt="edit">
@@ -47,14 +47,27 @@
                             <img src="@/assets/delete_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg" alt="delete">
                         </button>
                     </div>
+                    <div></div>
+                    <div></div>
+                    <div class="relative bottom-2">Expenses</div>
+                    <div class="relative bottom-2">Balance</div>
+                    <div></div>
                 </div>
             </template>
         </div>
         <div class="flex flex-row flex-wrap border-b border-r border-l w-3xl rounded-b" v-else>
             <template v-for="el in this.getPersons" :key="el">
-                <div class="flex items-center justify-center m-2 py-2 px-3 items-center justify-center rounded-xl gap-2 border text-xs shadow-md">
+                <div v-if="el.balance > 0" class="flex items-center justify-center m-2 py-2 px-3 items-center justify-center rounded-xl gap-2 border text-xs border-lime-500 bg-lime-100">
                     <span> {{ el.name }} </span>
-                    <span>  {{ el.balance }} </span>
+                    <span>  {{ (el.balance).toFixed(2) + " €" }} </span>
+                </div>
+                <div v-else-if="el.balance < 0" class="flex items-center justify-center m-2 py-2 px-3 items-center justify-center rounded-xl gap-2 border text-xs border-red-500 bg-red-100">
+                    <span> {{ el.name }} </span>
+                    <span>  {{ (el.balance).toFixed(2) + " €" }} </span>
+                </div>
+                <div v-else class="flex items-center justify-center m-2 py-2 px-3 items-center justify-center rounded-xl gap-2 border text-xs border-gray-500 bg-gray-100">
+                    <span> {{ el.name }} </span>
+                    <span>  {{ (el.balance).toFixed(2) + " €" }} </span>
                 </div>
             </template>
         </div>
